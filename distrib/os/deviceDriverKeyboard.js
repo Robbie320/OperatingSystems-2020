@@ -3,10 +3,10 @@
 
    The Kernel Keyboard Device Driver.
    ---------------------------------- */
-var TSOS;
-(function (TSOS) {
+var RobOS;
+(function (RobOS) {
     // Extends DeviceDriver
-    class DeviceDriverKeyboard extends TSOS.DeviceDriver {
+    class DeviceDriverKeyboard extends RobOS.DeviceDriver {
         constructor() {
             // Override the base method pointers.
             // The code below cannot run because "this" can only be
@@ -47,6 +47,6 @@ var TSOS;
             }
         }
     }
-    TSOS.DeviceDriverKeyboard = DeviceDriverKeyboard;
-})(TSOS || (TSOS = {}));
+    RobOS.DeviceDriverKeyboard = DeviceDriverKeyboard;
+})(RobOS || (RobOS = {}));
 //# sourceMappingURL=deviceDriverKeyboard.js.map

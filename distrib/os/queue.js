@@ -7,8 +7,8 @@
    Look at the push and shift methods, as they are the least obvious here.
 
    ------------ */
-var TSOS;
-(function (TSOS) {
+var RobOS;
+(function (RobOS) {
     class Queue {
         constructor(q = new Array()) {
             this.q = q;
@@ -37,6 +37,6 @@ var TSOS;
             return retVal;
         }
     }
-    TSOS.Queue = Queue;
-})(TSOS || (TSOS = {}));
+    RobOS.Queue = Queue;
+})(RobOS || (RobOS = {}));
 //# sourceMappingURL=queue.js.map

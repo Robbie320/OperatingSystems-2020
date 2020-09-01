@@ -4,7 +4,7 @@
    The Kernel Keyboard Device Driver.
    ---------------------------------- */
 
-module TSOS {
+module RobOS {
 
     // Extends DeviceDriver
     export class DeviceDriverKeyboard extends DeviceDriver {

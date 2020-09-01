@@ -4,8 +4,8 @@
      The OS Console - stdIn and stdOut by default.
      Note: This is not the Shell. The Shell is the "command line interface" (CLI) or interpreter for this console.
      ------------ */
-var TSOS;
-(function (TSOS) {
+var RobOS;
+(function (RobOS) {
     class Console {
         constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "") {
             this.currentFont = currentFont;
@@ -76,6 +76,6 @@ var TSOS;
             // TODO: Handle scrolling. (iProject 1)
         }
     }
-    TSOS.Console = Console;
-})(TSOS || (TSOS = {}));
+    RobOS.Console = Console;
+})(RobOS || (RobOS = {}));
 //# sourceMappingURL=console.js.map

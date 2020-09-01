@@ -1,7 +1,7 @@
-/* TSOS.css */
+/* RobOS.css */
 
 body {
-  background: #909193 url(distrib/images/linen.png) repeat;
+  background: #909193 url(distrib/images/zeldamap.png) repeat;
   font-family: Helvetica, Verdana, Arial, sans-serif;
   font-size: 12pt;
   font-weight: normal;
@@ -32,7 +32,7 @@ h3 {
 
 #display {
   background-color:#DFDBC3;
-  border: 2px solid red;
+  border: 2px solid blue;
   cursor: default;
 }
 
@@ -41,8 +41,19 @@ h3 {
 }
 
 .footerText {
-  color: black;
+  color: white;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 8pt;
   text-align: center;
+  text-shadow: 2px 2px black;
+}
+
+label{
+  color: white;
+  text-shadow: 2px 2px black;
+}
+
+p{
+  color: white;
+  text-shadow: 2px 2px black;
 }

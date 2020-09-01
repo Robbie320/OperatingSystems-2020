@@ -18,7 +18,7 @@
 //
 // Control Services
 //
-module TSOS {
+module RobOS {
 
     export class Control {
 

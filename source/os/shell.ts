@@ -9,7 +9,7 @@
 
 // TODO: Write a base class / prototype for system services and let Shell inherit from it.
 
-module TSOS {
+module RobOS {
     export class Shell {
         // Properties
         public promptStr = ">";
@@ -71,6 +71,24 @@ module TSOS {
             sc = new ShellCommand(this.shellPrompt,
                                   "prompt",
                                   "<string> - Sets the prompt.");
+            this.commandList[this.commandList.length] = sc;
+            
+            // date
+            sc = new ShellCommand(this.shellDate,
+                "date",
+                " - Displays the current date and time.");
+            this.commandList[this.commandList.length] = sc;
+
+            // whereami
+            sc = new ShellCommand(this.shellWhereami,
+                "whereami",
+                " - Tells you where you are on Earth.");
+            this.commandList[this.commandList.length] = sc;
+
+            // prompt <string>
+            sc = new ShellCommand(this.shellLoz,
+                "loz",
+                " - Displays triforce text art... for now.");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -234,6 +252,36 @@ module TSOS {
                     case "help":
                         _StdOut.putText("Help displays a list of (hopefully) valid commands.");
                         break;
+                    case "ver":
+                        _StdOut.putText("The current version of RobOS.")
+                        break;
+                    case "shutdown":
+                        _StdOut.putText("Shuts down RobOS, but leaves the underlying host / hardware simulation running.")
+                        break;
+                    case "cls":
+                        _StdOut.putText("Clears the entire screen.  Resets cursor to the left side of the screen.")
+                        break;
+                    case "man":
+                        _StdOut.putText(" The manual. That thing you're reading. duh.")
+                        break;
+                    case "trace":
+                        _StdOut.putText("Turns the OS trace on or off.")
+                        break;
+                    case "rot13":
+                        _StdOut.putText("Does rot13 obfuscation on <string>.")
+                        break;
+                    case "prompt":
+                        _StdOut.putText("Sets the prompt.")
+                        break;
+                    case "date":
+                        _StdOut.putText("Tells date and time.  Or look at your watch.")
+                        break;
+                    case "whereami":
+                        _StdOut.putText("If you don't know where you are, I definitely don't")
+                        break;
+                    case "loz":
+                        _StdOut.putText("The Legend of Zelda ... ya know, the game series?")
+                        break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -284,5 +332,25 @@ module TSOS {
             }
         }
 
+        public shellDate(args: string[]) {
+           _StdOut.putText("Date: " + today);
+        }
+
+        public shellWhereami(args: string[]){
+            _StdOut.putText("https://earth.google.com/web/");
+        }
+
+        public shellLoz(args: string[]){
+            _StdOut.putText("          / \\          "); _StdOut.advanceLine();
+            _StdOut.putText("         /   \\         "); _StdOut.advanceLine();
+            _StdOut.putText("        /     \\        "); _StdOut.advanceLine();
+            _StdOut.putText("       /       \\       "); _StdOut.advanceLine();
+            _StdOut.putText("      /_________\\      "); _StdOut.advanceLine();
+            _StdOut.putText("     /\\        /\\     "); _StdOut.advanceLine();
+            _StdOut.putText("    /  \\      /  \\    "); _StdOut.advanceLine();
+            _StdOut.putText("   /    \\    /    \\   "); _StdOut.advanceLine();
+            _StdOut.putText("  /      \\  /      \\  "); _StdOut.advanceLine();
+            _StdOut.putText(" /________\\/________\\ ");
+        }
     }
 }

@@ -1,11 +1,11 @@
-var TSOS;
-(function (TSOS) {
+var RobOS;
+(function (RobOS) {
     class UserCommand {
         constructor(command = "", args = []) {
             this.command = command;
             this.args = args;
         }
     }
-    TSOS.UserCommand = UserCommand;
-})(TSOS || (TSOS = {}));
+    RobOS.UserCommand = UserCommand;
+})(RobOS || (RobOS = {}));
 //# sourceMappingURL=userCommand.js.map

@@ -3,8 +3,8 @@
 
      The "base class" for all Device Drivers.
      ------------------------------ */
-var TSOS;
-(function (TSOS) {
+var RobOS;
+(function (RobOS) {
     class DeviceDriver {
         constructor() {
             this.version = '0.07';
@@ -19,6 +19,6 @@ var TSOS;
             //}
         }
     }
-    TSOS.DeviceDriver = DeviceDriver;
-})(TSOS || (TSOS = {}));
+    RobOS.DeviceDriver = DeviceDriver;
+})(RobOS || (RobOS = {}));
 //# sourceMappingURL=deviceDriver.js.map

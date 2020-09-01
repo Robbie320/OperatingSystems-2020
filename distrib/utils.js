@@ -3,8 +3,8 @@
 
    Utility functions.
    -------- */
-var TSOS;
-(function (TSOS) {
+var RobOS;
+(function (RobOS) {
     class Utils {
         static trim(str) {
             // Use a regular expression to remove leading and trailing spaces.
@@ -43,6 +43,6 @@ var TSOS;
             return retVal;
         }
     }
-    TSOS.Utils = Utils;
-})(TSOS || (TSOS = {}));
+    RobOS.Utils = Utils;
+})(RobOS || (RobOS = {}));
 //# sourceMappingURL=utils.js.map

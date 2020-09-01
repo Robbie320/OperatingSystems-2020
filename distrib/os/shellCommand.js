@@ -1,5 +1,5 @@
-var TSOS;
-(function (TSOS) {
+var RobOS;
+(function (RobOS) {
     class ShellCommand {
         constructor(func, command = "", description = "") {
             this.func = func;
@@ -7,6 +7,6 @@ var TSOS;
             this.description = description;
         }
     }
-    TSOS.ShellCommand = ShellCommand;
-})(TSOS || (TSOS = {}));
+    RobOS.ShellCommand = ShellCommand;
+})(RobOS || (RobOS = {}));
 //# sourceMappingURL=shellCommand.js.map

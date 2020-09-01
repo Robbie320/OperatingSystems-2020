@@ -21,7 +21,7 @@
  * 
  *  * ----------------- */
 
-module TSOS {
+module RobOS {
 
     export class CanvasTextFunctions {
 
