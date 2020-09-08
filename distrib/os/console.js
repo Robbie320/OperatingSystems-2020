@@ -7,12 +7,14 @@
 var RobOS;
 (function (RobOS) {
     class Console {
-        constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "") {
+        constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "", cmdHistoryValue = 0, cmdHistory = []) {
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
             this.currentYPosition = currentYPosition;
             this.buffer = buffer;
+            this.cmdHistoryValue = cmdHistoryValue;
+            this.cmdHistory = cmdHistory;
         }
         init() {
             this.clearScreen();
@@ -33,9 +35,24 @@ var RobOS;
                 if (chr === String.fromCharCode(13)) { // the Enter key
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
+                    //add buffer to cmdHistory array
+                    this.cmdHistory[this.cmdHistory.length] = this.buffer;
+                    this.cmdHistoryValue = this.cmdHistory.length;
                     _OsShell.handleInput(this.buffer);
                     // ... and reset our buffer.
                     this.buffer = "";
+                }
+                else if (chr === String.fromCharCode(8)) { //handle backspace
+                    //Delete last character put in the console/on the canvas
+                    //Reset X Position
+                    this.backspace();
+                }
+                else if ((chr == String.fromCharCode(38)) ||
+                    (chr == String.fromCharCode(40))) { //handle up arrow
+                    this.inputHistory(chr);
+                }
+                else if (chr == String.fromCharCode(9)) { //handle tab autofill
+                    this.tabAutofill(this.buffer);
                 }
                 else {
                     // This is a "normal" character, so ...
@@ -63,6 +80,519 @@ var RobOS;
                 this.currentXPosition = this.currentXPosition + offset;
             }
         }
+        backspace() {
+            //get last entered character on console
+            var lastChr = this.buffer.slice(-1); // Get last character in buffer (character to backspace)
+            var width = _DrawingContext.measureText(this.currentFont, this.currentFontSize, lastChr);
+            // Move cursor position
+            this.currentXPosition -= width;
+            //Erase Character from console
+            //clearRect() - Clear Rectangle of cursor
+            _DrawingContext.clearRect(this.currentXPosition, this.currentYPosition - _DefaultFontSize, width, this.consoleHeight());
+            // Remove character from buffer
+            this.buffer = this.buffer.slice(0, -1);
+        }
+        inputHistory(chr) {
+            if (chr == String.fromCharCode(38) && this.cmdHistoryValue > 0) {
+                this.cmdHistoryValue -= 1;
+            }
+            else if (chr == String.fromCharCode(40) && this.cmdHistoryValue < this.cmdHistory.length - 1) {
+                this.cmdHistoryValue += 1;
+            }
+            //Clear Buffer//
+            this.currentXPosition = 0;
+            _DrawingContext.clearRect(this.currentXPosition, this.currentYPosition - _DefaultFontSize, _Canvas.width, this.consoleHeight());
+            _StdOut.putText(_OsShell.promptStr);
+            //add to buffer
+            this.buffer = this.cmdHistory[this.cmdHistoryValue];
+            //Display command
+            this.putText(this.buffer);
+        }
+        tabAutofill(cmd) {
+            if (cmd.length == 0) { //check if buffer is empty
+                return;
+            }
+            else {
+                var command = "";
+                var letter = 0;
+                if (cmd[0] == "h") {
+                    command = "help";
+                    switch (cmd) {
+                        case "h":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "he":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "hel":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            //add command to buffer
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                }
+                else if (cmd[0] == "v") {
+                    command = "ver";
+                    switch (cmd) {
+                        case "v":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "ve":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                }
+                else if (cmd[0] == "s") {
+                    if (cmd[1] == "h") {
+                        command = "shutdown";
+                        switch (cmd) {
+                            case "sh":
+                                //delete letters in buffer already
+                                for (letter; letter <= cmd.length; letter++) {
+                                    this.backspace();
+                                }
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "shu":
+                                //delete letters in buffer already
+                                for (letter; letter <= cmd.length; letter++) {
+                                    this.backspace();
+                                }
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "shut":
+                                //delete letters in buffer already
+                                for (letter; letter <= cmd.length; letter++) {
+                                    this.backspace();
+                                }
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "shutd":
+                                //delete letters in buffer already
+                                for (letter; letter <= cmd.length; letter++) {
+                                    this.backspace();
+                                }
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "shutdo":
+                                //delete letters in buffer already
+                                for (letter; letter <= cmd.length; letter++) {
+                                    this.backspace();
+                                }
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "shutdow":
+                                //delete letters in buffer already
+                                for (letter; letter <= cmd.length; letter++) {
+                                    this.backspace();
+                                }
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }
+                    }
+                    else if (cmd[1] == "t") {
+                        command = "status";
+                        switch (cmd) {
+                            case "st":
+                                //delete letters in buffer already
+                                for (letter; letter <= cmd.length; letter++) {
+                                    this.backspace();
+                                }
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "sta":
+                                //delete letters in buffer already
+                                for (letter; letter <= cmd.length; letter++) {
+                                    this.backspace();
+                                }
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "stat":
+                                //delete letters in buffer already
+                                for (letter; letter <= cmd.length; letter++) {
+                                    this.backspace();
+                                }
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "statu":
+                                //delete letters in buffer already
+                                for (letter; letter <= cmd.length; letter++) {
+                                    this.backspace();
+                                }
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }
+                    }
+                }
+                else if (cmd[0] == "c") {
+                    command = "cls";
+                    switch (cmd) {
+                        case "c":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "cl":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                }
+                else if (cmd[0] == "m") {
+                    command = "man";
+                    switch (cmd) {
+                        case "m":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "ma":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                }
+                else if (cmd[0] == "t") {
+                    command = "trace";
+                    switch (cmd) {
+                        case "t":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "tr":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "tra":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "trac":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                }
+                else if (cmd[0] == "r") {
+                    command = "rot13";
+                    switch (cmd) {
+                        case "r":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "ro":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "rot":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "rot1":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                }
+                else if (cmd[0] == "p") {
+                    command = "prompt";
+                    switch (cmd) {
+                        case "p":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "pr":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "pro":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "prom":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "promp":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                }
+                else if (cmd[0] == "d") {
+                    command = "date";
+                    switch (cmd) {
+                        case "d":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "da":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "dat":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                }
+                else if (cmd[0] == "w") {
+                    command = "whereami";
+                    switch (cmd) {
+                        case "w":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "wh":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "whe":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "wher":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "where":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "wherea":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "wheream":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                }
+                else if (cmd[0] == "l") {
+                    command = "load";
+                    switch (cmd) {
+                        case "l":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "lo":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "loa":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                }
+                else if (cmd[0] == "b") {
+                    command = "bsod";
+                    switch (cmd) {
+                        case "b":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "bs":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "bso":
+                            //delete letters in buffer already
+                            for (letter; letter <= cmd.length; letter++) {
+                                this.backspace();
+                            }
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                }
+                //TODO: figure out for loop autocomplete
+                // iterate through command list
+                /*for (var i = 0; i <= _OsShell.commandList[_OsShell.commandList.length]; i++) {
+                    var command = _OsShell.commandList[i];
+                    //iterate through command for indivdual letters
+                    for (var n = 0; n <= command.length; n++) {
+                        if(cmd[n] == command[n])
+                        switch (cmd){
+                            case cmd[n]:
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }
+
+                    }
+                }*/
+            }
+        }
+        consoleHeight() {
+            // advanceLine() function for reference
+            return _DefaultFontSize +
+                _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
+                _FontHeightMargin;
+        }
         advanceLine() {
             this.currentXPosition = 0;
             /*
@@ -74,6 +604,23 @@ var RobOS;
                 _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
                 _FontHeightMargin;
             // TODO: Handle scrolling. (iProject 1)
+            //SCROLLING//
+            var canvas = _Canvas;
+            var height = _Canvas.height;
+            var width = _Canvas.width;
+            var ctx = _DrawingContext;
+            //Check if at the bottom of the screen
+            if (this.currentYPosition >= height) {
+                //Scrolling on the Y axis
+                var scrollY = (this.currentYPosition - height) + _FontHeightMargin;
+                //Get a screenshot of the canvas 
+                var screenshot = _DrawingContext.getImageData(0, 0, width, height);
+                //clear the current screen
+                this.clearScreen();
+                this.currentYPosition -= scrollY;
+                //place textabove the new input line
+                _DrawingContext.putImageData(screenshot, 0, -scrollY);
+            }
         }
     }
     RobOS.Console = Console;

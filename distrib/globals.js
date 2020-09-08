@@ -51,6 +51,8 @@ var _hardwareClockID = null;
 // For testing (and enrichment)...
 var Glados = null; // This is the function Glados() in glados-ip*.js RobOS/test/ .
 var _GLaDOS = null; // If the above is linked in, this is the instantiated instance of Glados.
+//pid in load function in shell file
+var pid = 0;
 var onDocumentLoad = function () {
     RobOS.Control.hostInit();
 };

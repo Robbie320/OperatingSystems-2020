@@ -66,6 +66,9 @@ var _hardwareClockID: number = null;
 var Glados: any = null;  // This is the function Glados() in glados-ip*.js http://alanclasses.github.io/TSOS/test/ .
 var _GLaDOS: any = null; // If the above is linked in, this is the instantiated instance of Glados.
 
+//pid in load function in shell file
+var pid: number = 0;
+
 var onDocumentLoad = function() {
 	RobOS.Control.hostInit();
 };

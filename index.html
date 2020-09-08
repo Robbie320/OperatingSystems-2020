@@ -43,7 +43,7 @@
       <input type="button"
              id = "btnStartOS"
              name="brnStartOS"
-             class="normal_button"
+             class="start_button"
              value="Start"
              tabindex="0"
              onclick="RobOS.Control.hostBtnStartOS_click(this);">
@@ -51,7 +51,7 @@
       <input type="button"
              id = "btnHaltOS"
              name="brnHaltOS"
-             class="normal_button"
+             class="halt_button"
              disabled="disabled"
              value="Halt"
              tabindex="1"
@@ -60,20 +60,40 @@
       <input type="button"
              id = "btnReset"
              name="brnReset"
-             class="normal_button"
+             class="reset_button"
              disabled="disabled"
              value="Reset"
              tabindex="2"
              onclick="RobOS.Control.hostBtnReset_click(this);">
       
-      <p>Date/Time: <span id="datetime"></span></p>
+      <!--Display Date and Live Time-->
+      Date & Time: <span id="datetime"></span>
+      <span id="span"></span>
+
+      <script type = "text/javascript">
+      var today = new Date();
+      document.getElementById("datetime").innerHTML = today.toLocaleDateString();
+      
+      var clock = document.getElementById('span');
+
+      function time() {
+         var day = new Date();
+         var sec = day.getSeconds();
+         var min = day.getMinutes();
+         var hour = day.getHours();
+         clock.textContent = hour + ":" + min + ":" + sec;
+      }
+      setInterval(time, 10);
+      </script>
+      <div id="statusIn">Status: </div>
    </div>
 
    <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
-      <canvas id="display"
-              width="500px"
-              height="500px"
-              tabindex="3">
+      <canvas id ="display"
+              width ="500px"
+              height ="500px"
+              tabindex ="3"
+              >
       </canvas>
    </div>
 
@@ -97,14 +117,15 @@
                    id  ="taProgramInput"
                    rows="8"
                    cols="48"
-         ></textarea>
+         >A9 A9 A2 01 EC 13 00 AC 0B 00 8D F0 00 EE 0B 00 D0 F5 00 00
+         </textarea>
       </label>
    </div>
 </div>
 
 <p class="footerText" style="clear:both;">
    <br>
-   Copyright &copy; 2008 - 2019 No Rights Reserved.
+   Copyright &copy; 2008 - 2020 No Rights Reserved.
    <br>
    Reproduction is inhibited without the express written consent of
    Ted Codd, Stevie Ray Vaughan, and Ian Fleming.
