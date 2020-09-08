@@ -3,9 +3,9 @@
 <head>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
    <meta name="author"             content="Alan G. Labouseur" />
-   <link rel="stylesheet" href="tsos.css" type="text/css" media="screen" />
+   <link rel="stylesheet" href="RobOS.css" type="text/css" media="screen" />
    <title>
-      TSOS - a browser-based virtual Operating System in TypeScript
+      RobOS - a browser-based virtual Operating System in TypeScript
    </title>
 
    <!-- Globals CONSTANTS and _Variables. Must included be first. -->
@@ -31,7 +31,7 @@
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment the line below to enable GLaDOS testing. -->
-   <script type="text/javascript" src="http://alanclasses.github.io/TSOS/test/glados-ip0.js"></script>
+   <!-- <script type="text/javascript" src="test/glados-ip1.js"></script> -->
    
 </head>
 
@@ -43,35 +43,57 @@
       <input type="button"
              id = "btnStartOS"
              name="brnStartOS"
-             class="normal_button"
+             class="start_button"
              value="Start"
              tabindex="0"
-             onclick="TSOS.Control.hostBtnStartOS_click(this);">
+             onclick="RobOS.Control.hostBtnStartOS_click(this);">
 
       <input type="button"
              id = "btnHaltOS"
              name="brnHaltOS"
-             class="normal_button"
+             class="halt_button"
              disabled="disabled"
              value="Halt"
              tabindex="1"
-             onclick="TSOS.Control.hostBtnHaltOS_click(this);">
+             onclick="RobOS.Control.hostBtnHaltOS_click(this);">
 
       <input type="button"
              id = "btnReset"
              name="brnReset"
-             class="normal_button"
+             class="reset_button"
              disabled="disabled"
              value="Reset"
              tabindex="2"
-             onclick="TSOS.Control.hostBtnReset_click(this);">
+             onclick="RobOS.Control.hostBtnReset_click(this);">
+      
+      <!--Display Date and Live Time-->
+      Date & Time: <span id="datetime"></span>
+      <span id="span"></span>
+
+      <script type = "text/javascript">
+      var today = new Date();
+      document.getElementById("datetime").innerHTML = today.toLocaleDateString();
+      
+      var clock = document.getElementById('span');
+
+      function time() {
+         var day = new Date();
+         var sec = day.getSeconds();
+         var min = day.getMinutes();
+         var hour = day.getHours();
+         clock.textContent = hour + ":" + min + ":" + sec;
+      }
+      setInterval(time, 10);
+      </script>
+      <div id="statusIn">Status: </div>
    </div>
 
    <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
-      <canvas id="display"
-              width="500px"
-              height="500px"
-              tabindex="3">
+      <canvas id ="display"
+              width ="500px"
+              height ="500px"
+              tabindex ="3"
+              >
       </canvas>
    </div>
 
@@ -95,14 +117,15 @@
                    id  ="taProgramInput"
                    rows="8"
                    cols="48"
-         ></textarea>
+         >A9 A9 A2 01 EC 13 00 AC 0B 00 8D F0 00 EE 0B 00 D0 F5 00 00
+         </textarea>
       </label>
    </div>
 </div>
 
 <p class="footerText" style="clear:both;">
    <br>
-   Copyright &copy; 2008 - 2019 No Rights Reserved.
+   Copyright &copy; 2008 - 2020 No Rights Reserved.
    <br>
    Reproduction is inhibited without the express written consent of
    Ted Codd, Stevie Ray Vaughan, and Ian Fleming.

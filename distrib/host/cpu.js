@@ -10,8 +10,8 @@
      This code references page numbers in the text book:
      Operating System Concepts 8th edition by Silberschatz, Galvin, and Gagne.  ISBN 978-0-470-12872-5
      ------------ */
-var TSOS;
-(function (TSOS) {
+var RobOS;
+(function (RobOS) {
     class Cpu {
         constructor(PC = 0, Acc = 0, Xreg = 0, Yreg = 0, Zflag = 0, isExecuting = false) {
             this.PC = PC;
@@ -35,6 +35,6 @@ var TSOS;
             // Do the real work here. Be sure to set this.isExecuting appropriately.
         }
     }
-    TSOS.Cpu = Cpu;
-})(TSOS || (TSOS = {}));
+    RobOS.Cpu = Cpu;
+})(RobOS || (RobOS = {}));
 //# sourceMappingURL=cpu.js.map

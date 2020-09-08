@@ -1,7 +1,7 @@
-/* TSOS.css */
+/* RobOS.css */
 
 body {
-  background: #909193 url(distrib/images/linen.png) repeat;
+  background: #48c9fc url(distrib/images/link.jpg) repeat;
   font-family: Helvetica, Verdana, Arial, sans-serif;
   font-size: 12pt;
   font-weight: normal;
@@ -31,18 +31,51 @@ h3 {
 }
 
 #display {
-  background-color:#DFDBC3;
-  border: 2px solid red;
+  background-color:rgb(255, 255, 255);
+  border: 2px solid rgb(26, 165, 26);
   cursor: default;
 }
 
-.normal_button {
+.start_button {
   width: 100px;
+  color: white;
+  background-color: rgb(26, 194, 26);
 }
 
+.halt_button {
+  width: 100px;
+  color: white;
+  background-color: red;
+}
+
+.reset_button {
+  width: 100px;
+  color: white;
+  background-color: rgb(42, 215, 228);
+}
 .footerText {
   color: black;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 8pt;
   text-align: center;
+}
+
+textarea{
+  background: transparent;
+}
+
+label{
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+span{
+  color: black;
+}
+
+div{
+  color: black;
 }

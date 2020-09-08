@@ -21,7 +21,7 @@
  * 
  *  * ----------------- */
 
-module TSOS {
+module RobOS {
 
     export class CanvasTextFunctions {
 
@@ -186,7 +186,6 @@ module TSOS {
             ctx.restore();
             return total;
         }
-
         public static enable(ctx) {
             ctx.drawText = function(font,size,x,y,text) { return CanvasTextFunctions.draw( ctx, font,size,x,y,text); };
             ctx.measureText = function(font,size,text) { return CanvasTextFunctions.measure( font,size,text); };

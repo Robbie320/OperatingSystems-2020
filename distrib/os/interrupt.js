@@ -1,14 +1,14 @@
 /* ------------
    Interrupt.ts
    ------------ */
-var TSOS;
-(function (TSOS) {
+var RobOS;
+(function (RobOS) {
     class Interrupt {
         constructor(irq, params) {
             this.irq = irq;
             this.params = params;
         }
     }
-    TSOS.Interrupt = Interrupt;
-})(TSOS || (TSOS = {}));
+    RobOS.Interrupt = Interrupt;
+})(RobOS || (RobOS = {}));
 //# sourceMappingURL=interrupt.js.map

@@ -14,8 +14,8 @@
      This code references page numbers in the text book:
      Operating System Concepts 8th edition by Silberschatz, Galvin, and Gagne.  ISBN 978-0-470-12872-5
      ------------ */
-var TSOS;
-(function (TSOS) {
+var RobOS;
+(function (RobOS) {
     class Devices {
         constructor() {
             _hardwareClockID = -1;
@@ -49,10 +49,10 @@ var TSOS;
                 // Note the pressed key code in the params (Mozilla-specific).
                 var params = new Array(event.which, event.shiftKey);
                 // Enqueue this interrupt on the kernel interrupt queue so that it gets to the Interrupt handler.
-                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(KEYBOARD_IRQ, params));
+                _KernelInterruptQueue.enqueue(new RobOS.Interrupt(KEYBOARD_IRQ, params));
             }
         }
     }
-    TSOS.Devices = Devices;
-})(TSOS || (TSOS = {}));
+    RobOS.Devices = Devices;
+})(RobOS || (RobOS = {}));
 //# sourceMappingURL=devices.js.map
