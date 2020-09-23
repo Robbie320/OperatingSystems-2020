@@ -63,6 +63,9 @@ var RobOS;
             // load
             sc = new RobOS.ShellCommand(this.shellLoad, "load", " - Load to validate the user code in the HTML5 text area.");
             this.commandList[this.commandList.length] = sc;
+            // run
+            sc = new RobOS.ShellCommand(this.shellRun, "run", "<pid> - Runs a program that's already loaded into memory.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -212,34 +215,34 @@ var RobOS;
                         _StdOut.putText("Help displays a list of (hopefully) valid commands.");
                         break;
                     case "ver":
-                        _StdOut.putText("The current version of RobOS.")
+                        _StdOut.putText("The current version of RobOS.");
                         break;
                     case "shutdown":
-                        _StdOut.putText("Shuts down RobOS, but leaves the underlying host / hardware simulation running.")
+                        _StdOut.putText("Shuts down RobOS, but leaves the underlying host / hardware simulation running.");
                         break;
                     case "cls":
-                        _StdOut.putText("Clears the entire screen.  Resets cursor to the left side of the screen.")
+                        _StdOut.putText("Clears the entire screen.  Resets cursor to the left side of the screen.");
                         break;
                     case "man":
-                        _StdOut.putText(" The manual. That thing you're reading. duh.")
+                        _StdOut.putText(" The manual. That thing you're reading. duh.");
                         break;
                     case "trace":
-                        _StdOut.putText("Turns the OS trace on or off.")
+                        _StdOut.putText("Turns the OS trace on or off.");
                         break;
                     case "rot13":
-                        _StdOut.putText("Does rot13 obfuscation on <string>.")
+                        _StdOut.putText("Does rot13 obfuscation on <string>.");
                         break;
                     case "prompt":
-                        _StdOut.putText("Sets the prompt.")
+                        _StdOut.putText("Sets the prompt.");
                         break;
                     case "date":
-                        _StdOut.putText("Tells date and time.  Or look at your watch.")
+                        _StdOut.putText("Tells date and time.  Or look at your watch.");
                         break;
                     case "whereami":
-                        _StdOut.putText("If you don't know where you are, I definitely don't")
+                        _StdOut.putText("If you don't know where you are, I definitely don't");
                         break;
                     case "loz":
-                        _StdOut.putText("The Legend of Zelda ... ya know, the game series?")
+                        _StdOut.putText("The Legend of Zelda ... ya know, the game series?");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     case "ver":
@@ -280,6 +283,9 @@ var RobOS;
                         break;
                     case "load":
                         _StdOut.putText("Validate the user code in the HTML5 text area.");
+                        break;
+                    case "run":
+                        _StdOut.putText("Runs a program that's already loaded into memory.");
                         break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -393,7 +399,8 @@ var RobOS;
             //Valid hex values to make program
             var validHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', ' '];
             //User Program Input
-            var upi = document.getElementById("taProgramInput").value.trim();
+            var upi = _UserCodeTextArea.value;
+            upi = RobOS.Utils.trim(upi);
             //Validate Hex Characters
             for (var i = 0; i < upi.length; i++) {
                 //Check if each character is in array
@@ -408,10 +415,27 @@ var RobOS;
             //Loading Program
             if (loaded == true) {
                 //pid initialized in globals.ts 
-                _StdOut.putText("Program loaded. PID: " + pid + ".");
-                pid += 1;
+                _StdOut.putText("Program loaded. PID: " + PID + ".");
+                //Increment PID
+                PID += 1;
                 _StdOut.advanceLine();
-                _StdOut.putText(upi);
+                _StdOut.putText(upi); //user program input
+            }
+        }
+        shellRun(args) {
+            //Check that arg is not empty and is a number
+            if (args.length > 0 && (!isNaN(Number(args[0])))) {
+                let enteredPID = Number(args[0]);
+                //check if PID is loaded in memory
+                if (_MemoryManager) {
+                }
+                else {
+                    _StdOut.putText("PID number is invalid.");
+                    _StdOut.putText("Please enter a valid PID number.");
+                }
+            }
+            else {
+                _StdOut.putText("Please enter a PID number.");
             }
         }
     }

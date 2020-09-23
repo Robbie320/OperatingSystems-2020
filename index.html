@@ -15,7 +15,9 @@
    <script type="text/javascript" src="distrib/host/control.js"></script>
    <script type="text/javascript" src="distrib/host/devices.js"></script>
    <script type="text/javascript" src="distrib/host/cpu.js"></script>
-
+   <script type="text/javascript" src="distrib/host/memory.js"></script>
+   <script type="text/javascript" src="distrib/host/memoryAccessor.js"></script>
+   
    <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
    <script type="text/javascript" src="distrib/os/interrupt.js"></script>
    <script type="text/javascript" src="distrib/os/canvastext.js"></script>
@@ -27,11 +29,12 @@
    <script type="text/javascript" src="distrib/os/shellCommand.js"></script>
    <script type="text/javascript" src="distrib/os/userCommand.js"></script>
    <script type="text/javascript" src="distrib/os/kernel.js"></script>
+   <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
 
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment the line below to enable GLaDOS testing. -->
-   <!-- <script type="text/javascript" src="test/glados-ip1.js"></script> -->
+   <!-- <script type="text/javascript" src="test/glados-ip2.js"></script> -->
    
 </head>
 
@@ -65,16 +68,43 @@
              value="Reset"
              tabindex="2"
              onclick="RobOS.Control.hostBtnReset_click(this);">
-      
+
+      <input type="button"
+             id = "btnSingleStepOn"
+             name="btnSingleStepOn"
+             class="singleStepOn_button"
+             disabled="disabled"
+             value="Single Step On"
+             tabindex="3"
+             onclick="RobOS.Control.hostBtnSingleStepOn_click(this);">
+
+      <input type="button"
+             id = "btnSingleStepOff"
+             name="btnSingleStepOff"
+             class="singleStepOff_button"
+             disabled="disabled"
+             value="Single Step Off"
+             tabindex="4"
+             onclick="RobOS.Control.hostBtnSingleStepOff_click(this);">
+
+      <input type="button"
+             id = "btnNextStep"
+             name="btnNextStep"
+             class="nextStep_button"
+             disabled="disabled"
+             value="Next Step"
+             tabindex="5"
+             onclick="RobOS.Control.hostBtnNextStep_click(this);">
+      <br>
       <!--Display Date and Live Time-->
-      Date & Time: <span id="datetime"></span>
-      <span id="span"></span>
+      Date & Time: <span id="date"></span>
+      <span id="time"></span>
 
       <script type = "text/javascript">
       var today = new Date();
-      document.getElementById("datetime").innerHTML = today.toLocaleDateString();
+      document.getElementById("date").innerHTML = today.toLocaleDateString();
       
-      var clock = document.getElementById('span');
+      var clock = document.getElementById('time');
 
       function time() {
          var day = new Date();
@@ -83,8 +113,10 @@
          var hour = day.getHours();
          clock.textContent = hour + ":" + min + ":" + sec;
       }
+      setInterval(Date, 10);
       setInterval(time, 10);
       </script>
+      <br>
       <div id="statusIn">Status: </div>
    </div>
 
@@ -92,7 +124,7 @@
       <canvas id ="display"
               width ="500px"
               height ="500px"
-              tabindex ="3"
+              tabindex ="6"
               >
       </canvas>
    </div>
@@ -102,9 +134,9 @@
          Host Log
          <br>
          <textarea name="taHostLog"
-                   id  ="taHostLog"
-                   rows="26"
-                   cols="48"
+                     id  ="taHostLog"
+                     rows="10"
+                     cols="48"
          ></textarea>
       </label>
    </div>
@@ -114,12 +146,1130 @@
          User Program Input
          <br>
          <textarea name="taProgramInput"
-                   id  ="taProgramInput"
-                   rows="8"
-                   cols="48"
+                     id  ="taProgramInput"
+                     rows="5"
+                     cols="48"
          >A9 A9 A2 01 EC 13 00 AC 0B 00 8D F0 00 EE 0B 00 D0 F5 00 00
          </textarea>
       </label>
+   </div>
+
+   <div id="divCPU" style="margin-left:520px;">
+      <label>CPU</label>
+      <table id   ="tbCPU"
+             style="width: 370px;">
+         <tr>
+            <th>PC</th>
+            <th>IR</th>
+            <th>ACC</th>
+            <th>X</th>
+            <th>Y</th>
+            <th>Z</th>
+         </tr>
+         <tr>
+            <td id="cpuPC">0</td>
+            <td id="cpuIR">0</td>
+            <td id="cpuACC">0</td>
+            <td id="cpuX">0</td>
+            <td id="cpuY">0</td>
+            <td id="cpuZ">0</td>
+         </tr>
+      </table>
+   </div>
+
+   <div id="divMemory" style="margin-left:520px;">
+      <label>Memory</label>
+      <div id   ="divMemory2"
+           style="width:369px; height:84px; overflow-y:scroll;">
+         <table id  ="tbMemory" 
+                style="width:353px;">
+            <tr>
+               <td style="font-weight: bold">0x000</td>
+               <td id="memory000">00</td>
+               <td id="memory001">00</td>
+               <td id="memory002">00</td>
+               <td id="memory003">00</td>
+               <td id="memory004">00</td>
+               <td id="memory005">00</td>
+               <td id="memory006">00</td>
+               <td id="memory007">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x008</td>
+               <td id="memory008">00</td>
+               <td id="memory009">00</td>
+               <td id="memory00A">00</td>
+               <td id="memory00B">00</td>
+               <td id="memory00C">00</td>
+               <td id="memory00D">00</td>
+               <td id="memory00E">00</td>
+               <td id="memory00F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x010</td>
+               <td id="memory010">00</td>
+               <td id="memory011">00</td>
+               <td id="memory012">00</td>
+               <td id="memory013">00</td>
+               <td id="memory014">00</td>
+               <td id="memory015">00</td>
+               <td id="memory016">00</td>
+               <td id="memory017">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x018</td>
+               <td id="memory018">00</td>
+               <td id="memory019">00</td>
+               <td id="memory01A">00</td>
+               <td id="memory01B">00</td>
+               <td id="memory01C">00</td>
+               <td id="memory01D">00</td>
+               <td id="memory01E">00</td>
+               <td id="memory01F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x020</td>
+               <td id="memory020">00</td>
+               <td id="memory021">00</td>
+               <td id="memory022">00</td>
+               <td id="memory023">00</td>
+               <td id="memory024">00</td>
+               <td id="memory025">00</td>
+               <td id="memory026">00</td>
+               <td id="memory027">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x028</td>
+               <td id="memory028">00</td>
+               <td id="memory029">00</td>
+               <td id="memory02A">00</td>
+               <td id="memory02B">00</td>
+               <td id="memory02C">00</td>
+               <td id="memory02D">00</td>
+               <td id="memory02E">00</td>
+               <td id="memory02F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x030</td>
+               <td id="memory030">00</td>
+               <td id="memory031">00</td>
+               <td id="memory032">00</td>
+               <td id="memory033">00</td>
+               <td id="memory034">00</td>
+               <td id="memory035">00</td>
+               <td id="memory036">00</td>
+               <td id="memory037">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x038</td>
+               <td id="memory038">00</td>
+               <td id="memory039">00</td>
+               <td id="memory03A">00</td>
+               <td id="memory03B">00</td>
+               <td id="memory03C">00</td>
+               <td id="memory03D">00</td>
+               <td id="memory03E">00</td>
+               <td id="memory03F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x040</td>
+               <td id="memory040">00</td>
+               <td id="memory041">00</td>
+               <td id="memory042">00</td>
+               <td id="memory043">00</td>
+               <td id="memory044">00</td>
+               <td id="memory045">00</td>
+               <td id="memory046">00</td>
+               <td id="memory047">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x048</td>
+               <td id="memory048">00</td>
+               <td id="memory049">00</td>
+               <td id="memory04A">00</td>
+               <td id="memory04B">00</td>
+               <td id="memory04C">00</td>
+               <td id="memory04D">00</td>
+               <td id="memory04E">00</td>
+               <td id="memory04F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x050</td>
+               <td id="memory050">00</td>
+               <td id="memory051">00</td>
+               <td id="memory052">00</td>
+               <td id="memory053">00</td>
+               <td id="memory054">00</td>
+               <td id="memory055">00</td>
+               <td id="memory056">00</td>
+               <td id="memory057">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x058</td>
+               <td id="memory058">00</td>
+               <td id="memory059">00</td>
+               <td id="memory05A">00</td>
+               <td id="memory05B">00</td>
+               <td id="memory05C">00</td>
+               <td id="memory05D">00</td>
+               <td id="memory05E">00</td>
+               <td id="memory05F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x060</td>
+               <td id="memory060">00</td>
+               <td id="memory061">00</td>
+               <td id="memory062">00</td>
+               <td id="memory063">00</td>
+               <td id="memory064">00</td>
+               <td id="memory065">00</td>
+               <td id="memory066">00</td>
+               <td id="memory067">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x068</td>
+               <td id="memory068">00</td>
+               <td id="memory069">00</td>
+               <td id="memory06A">00</td>
+               <td id="memory06B">00</td>
+               <td id="memory06C">00</td>
+               <td id="memory06D">00</td>
+               <td id="memory06E">00</td>
+               <td id="memory06F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x070</td>
+               <td id="memory070">00</td>
+               <td id="memory071">00</td>
+               <td id="memory072">00</td>
+               <td id="memory073">00</td>
+               <td id="memory074">00</td>
+               <td id="memory075">00</td>
+               <td id="memory076">00</td>
+               <td id="memory077">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x078</td>
+               <td id="memory078">00</td>
+               <td id="memory079">00</td>
+               <td id="memory07A">00</td>
+               <td id="memory07B">00</td>
+               <td id="memory07C">00</td>
+               <td id="memory07D">00</td>
+               <td id="memory07E">00</td>
+               <td id="memory07F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x080</td>
+               <td id="memory080">00</td>
+               <td id="memory081">00</td>
+               <td id="memory082">00</td>
+               <td id="memory083">00</td>
+               <td id="memory084">00</td>
+               <td id="memory085">00</td>
+               <td id="memory086">00</td>
+               <td id="memory087">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x088</td>
+               <td id="memory088">00</td>
+               <td id="memory089">00</td>
+               <td id="memory08A">00</td>
+               <td id="memory08B">00</td>
+               <td id="memory08C">00</td>
+               <td id="memory08D">00</td>
+               <td id="memory08E">00</td>
+               <td id="memory08F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x090</td>
+               <td id="memory090">00</td>
+               <td id="memory091">00</td>
+               <td id="memory092">00</td>
+               <td id="memory093">00</td>
+               <td id="memory094">00</td>
+               <td id="memory095">00</td>
+               <td id="memory096">00</td>
+               <td id="memory097">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x098</td>
+               <td id="memory098">00</td>
+               <td id="memory099">00</td>
+               <td id="memory09A">00</td>
+               <td id="memory09B">00</td>
+               <td id="memory09C">00</td>
+               <td id="memory09D">00</td>
+               <td id="memory09E">00</td>
+               <td id="memory09F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0A0</td>
+               <td id="memory0A0">00</td>
+               <td id="memory0A1">00</td>
+               <td id="memory0A2">00</td>
+               <td id="memory0A3">00</td>
+               <td id="memory0A4">00</td>
+               <td id="memory0A5">00</td>
+               <td id="memory0A6">00</td>
+               <td id="memory0A7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0A8</td>
+               <td id="memory0A8">00</td>
+               <td id="memory0A9">00</td>
+               <td id="memory0AA">00</td>
+               <td id="memory0AB">00</td>
+               <td id="memory0AC">00</td>
+               <td id="memory0AD">00</td>
+               <td id="memory0AE">00</td>
+               <td id="memory0AF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0B0</td>
+               <td id="memory0B0">00</td>
+               <td id="memory0B1">00</td>
+               <td id="memory0B2">00</td>
+               <td id="memory0B3">00</td>
+               <td id="memory0B4">00</td>
+               <td id="memory0B5">00</td>
+               <td id="memory0B6">00</td>
+               <td id="memory0B7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0B8</td>
+               <td id="memory0B8">00</td>
+               <td id="memory0B9">00</td>
+               <td id="memory0BA">00</td>
+               <td id="memory0BB">00</td>
+               <td id="memory0BC">00</td>
+               <td id="memory0BD">00</td>
+               <td id="memory0BE">00</td>
+               <td id="memory0BF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0C0</td>
+               <td id="memory0C0">00</td>
+               <td id="memory0C1">00</td>
+               <td id="memory0C2">00</td>
+               <td id="memory0C3">00</td>
+               <td id="memory0C4">00</td>
+               <td id="memory0C5">00</td>
+               <td id="memory0C6">00</td>
+               <td id="memory0C7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0C8</td>
+               <td id="memory0C8">00</td>
+               <td id="memory0C9">00</td>
+               <td id="memory0CA">00</td>
+               <td id="memory0CB">00</td>
+               <td id="memory0CC">00</td>
+               <td id="memory0CD">00</td>
+               <td id="memory0CE">00</td>
+               <td id="memory0CF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0D0</td>
+               <td id="memory0D0">00</td>
+               <td id="memory0D1">00</td>
+               <td id="memory0D2">00</td>
+               <td id="memory0D3">00</td>
+               <td id="memory0D4">00</td>
+               <td id="memory0D5">00</td>
+               <td id="memory0D6">00</td>
+               <td id="memory0D7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0D8</td>
+               <td id="memory0D8">00</td>
+               <td id="memory0D9">00</td>
+               <td id="memory0DA">00</td>
+               <td id="memory0DB">00</td>
+               <td id="memory0DC">00</td>
+               <td id="memory0DD">00</td>
+               <td id="memory0DE">00</td>
+               <td id="memory0DF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0E0</td>
+               <td id="memory0E0">00</td>
+               <td id="memory0E1">00</td>
+               <td id="memory0E2">00</td>
+               <td id="memory0E3">00</td>
+               <td id="memory0E4">00</td>
+               <td id="memory0E5">00</td>
+               <td id="memory0E6">00</td>
+               <td id="memory0E7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0E8</td>
+               <td id="memory0E8">00</td>
+               <td id="memory0E9">00</td>
+               <td id="memory0EA">00</td>
+               <td id="memory0EB">00</td>
+               <td id="memory0EC">00</td>
+               <td id="memory0ED">00</td>
+               <td id="memory0EE">00</td>
+               <td id="memory0EF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0F0</td>
+               <td id="memory0F0">00</td>
+               <td id="memory0F1">00</td>
+               <td id="memory0F2">00</td>
+               <td id="memory0F3">00</td>
+               <td id="memory0F4">00</td>
+               <td id="memory0F5">00</td>
+               <td id="memory0F6">00</td>
+               <td id="memory0F7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0F8</td>
+               <td id="memory0F8">00</td>
+               <td id="memory0F9">00</td>
+               <td id="memory0FA">00</td>
+               <td id="memory0FB">00</td>
+               <td id="memory0FC">00</td>
+               <td id="memory0FD">00</td>
+               <td id="memory0FE">00</td>
+               <td id="memory0FF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x100</td>
+               <td id="memory100">00</td>
+               <td id="memory101">00</td>
+               <td id="memory102">00</td>
+               <td id="memory103">00</td>
+               <td id="memory104">00</td>
+               <td id="memory105">00</td>
+               <td id="memory106">00</td>
+               <td id="memory107">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x108</td>
+               <td id="memory108">00</td>
+               <td id="memory109">00</td>
+               <td id="memory10A">00</td>
+               <td id="memory10B">00</td>
+               <td id="memory10C">00</td>
+               <td id="memory10D">00</td>
+               <td id="memory10E">00</td>
+               <td id="memory10F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x110</td>
+               <td id="memory110">00</td>
+               <td id="memory111">00</td>
+               <td id="memory112">00</td>
+               <td id="memory113">00</td>
+               <td id="memory114">00</td>
+               <td id="memory115">00</td>
+               <td id="memory116">00</td>
+               <td id="memory117">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x118</td>
+               <td id="memory118">00</td>
+               <td id="memory119">00</td>
+               <td id="memory11A">00</td>
+               <td id="memory11B">00</td>
+               <td id="memory11C">00</td>
+               <td id="memory11D">00</td>
+               <td id="memory11E">00</td>
+               <td id="memory11F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x120</td>
+               <td id="memory120">00</td>
+               <td id="memory121">00</td>
+               <td id="memory122">00</td>
+               <td id="memory123">00</td>
+               <td id="memory124">00</td>
+               <td id="memory125">00</td>
+               <td id="memory126">00</td>
+               <td id="memory127">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x128</td>
+               <td id="memory128">00</td>
+               <td id="memory129">00</td>
+               <td id="memory12A">00</td>
+               <td id="memory12B">00</td>
+               <td id="memory12C">00</td>
+               <td id="memory12D">00</td>
+               <td id="memory12E">00</td>
+               <td id="memory12F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x130</td>
+               <td id="memory130">00</td>
+               <td id="memory131">00</td>
+               <td id="memory132">00</td>
+               <td id="memory133">00</td>
+               <td id="memory134">00</td>
+               <td id="memory135">00</td>
+               <td id="memory136">00</td>
+               <td id="memory137">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x138</td>
+               <td id="memory138">00</td>
+               <td id="memory139">00</td>
+               <td id="memory13A">00</td>
+               <td id="memory13B">00</td>
+               <td id="memory13C">00</td>
+               <td id="memory13D">00</td>
+               <td id="memory13E">00</td>
+               <td id="memory13F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x140</td>
+               <td id="memory140">00</td>
+               <td id="memory141">00</td>
+               <td id="memory142">00</td>
+               <td id="memory143">00</td>
+               <td id="memory144">00</td>
+               <td id="memory145">00</td>
+               <td id="memory146">00</td>
+               <td id="memory147">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x148</td>
+               <td id="memory148">00</td>
+               <td id="memory149">00</td>
+               <td id="memory14A">00</td>
+               <td id="memory14B">00</td>
+               <td id="memory14C">00</td>
+               <td id="memory14D">00</td>
+               <td id="memory14E">00</td>
+               <td id="memory14F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x150</td>
+               <td id="memory150">00</td>
+               <td id="memory151">00</td>
+               <td id="memory152">00</td>
+               <td id="memory153">00</td>
+               <td id="memory154">00</td>
+               <td id="memory155">00</td>
+               <td id="memory156">00</td>
+               <td id="memory157">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x158</td>
+               <td id="memory158">00</td>
+               <td id="memory159">00</td>
+               <td id="memory15A">00</td>
+               <td id="memory15B">00</td>
+               <td id="memory15C">00</td>
+               <td id="memory15D">00</td>
+               <td id="memory15E">00</td>
+               <td id="memory15F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x160</td>
+               <td id="memory160">00</td>
+               <td id="memory161">00</td>
+               <td id="memory162">00</td>
+               <td id="memory163">00</td>
+               <td id="memory164">00</td>
+               <td id="memory165">00</td>
+               <td id="memory166">00</td>
+               <td id="memory167">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x168</td>
+               <td id="memory168">00</td>
+               <td id="memory169">00</td>
+               <td id="memory16A">00</td>
+               <td id="memory16B">00</td>
+               <td id="memory16C">00</td>
+               <td id="memory16D">00</td>
+               <td id="memory16E">00</td>
+               <td id="memory16F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x170</td>
+               <td id="memory170">00</td>
+               <td id="memory171">00</td>
+               <td id="memory172">00</td>
+               <td id="memory173">00</td>
+               <td id="memory174">00</td>
+               <td id="memory175">00</td>
+               <td id="memory176">00</td>
+               <td id="memory177">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x178</td>
+               <td id="memory178">00</td>
+               <td id="memory179">00</td>
+               <td id="memory17A">00</td>
+               <td id="memory17B">00</td>
+               <td id="memory17C">00</td>
+               <td id="memory17D">00</td>
+               <td id="memory17E">00</td>
+               <td id="memory17F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x180</td>
+               <td id="memory180">00</td>
+               <td id="memory181">00</td>
+               <td id="memory182">00</td>
+               <td id="memory183">00</td>
+               <td id="memory184">00</td>
+               <td id="memory185">00</td>
+               <td id="memory186">00</td>
+               <td id="memory187">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x188</td>
+               <td id="memory188">00</td>
+               <td id="memory189">00</td>
+               <td id="memory18A">00</td>
+               <td id="memory18B">00</td>
+               <td id="memory18C">00</td>
+               <td id="memory18D">00</td>
+               <td id="memory18E">00</td>
+               <td id="memory18F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x190</td>
+               <td id="memory190">00</td>
+               <td id="memory191">00</td>
+               <td id="memory192">00</td>
+               <td id="memory193">00</td>
+               <td id="memory194">00</td>
+               <td id="memory195">00</td>
+               <td id="memory196">00</td>
+               <td id="memory197">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x198</td>
+               <td id="memory198">00</td>
+               <td id="memory199">00</td>
+               <td id="memory19A">00</td>
+               <td id="memory19B">00</td>
+               <td id="memory19C">00</td>
+               <td id="memory19D">00</td>
+               <td id="memory19E">00</td>
+               <td id="memory19F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1A0</td>
+               <td id="memory1A0">00</td>
+               <td id="memory1A1">00</td>
+               <td id="memory1A2">00</td>
+               <td id="memory1A3">00</td>
+               <td id="memory1A4">00</td>
+               <td id="memory1A5">00</td>
+               <td id="memory1A6">00</td>
+               <td id="memory1A7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1A8</td>
+               <td id="memory1A8">00</td>
+               <td id="memory1A9">00</td>
+               <td id="memory1AA">00</td>
+               <td id="memory1AB">00</td>
+               <td id="memory1AC">00</td>
+               <td id="memory1AD">00</td>
+               <td id="memory1AE">00</td>
+               <td id="memory1AF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1B0</td>
+               <td id="memory1B0">00</td>
+               <td id="memory1B1">00</td>
+               <td id="memory1B2">00</td>
+               <td id="memory1B3">00</td>
+               <td id="memory1B4">00</td>
+               <td id="memory1B5">00</td>
+               <td id="memory1B6">00</td>
+               <td id="memory1B7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1B8</td>
+               <td id="memory1B8">00</td>
+               <td id="memory1B9">00</td>
+               <td id="memory1BA">00</td>
+               <td id="memory1BB">00</td>
+               <td id="memory1BC">00</td>
+               <td id="memory1BD">00</td>
+               <td id="memory1BE">00</td>
+               <td id="memory1BF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1C0</td>
+               <td id="memory1C0">00</td>
+               <td id="memory1C1">00</td>
+               <td id="memory1C2">00</td>
+               <td id="memory1C3">00</td>
+               <td id="memory1C4">00</td>
+               <td id="memory1C5">00</td>
+               <td id="memory1C6">00</td>
+               <td id="memory1C7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1C8</td>
+               <td id="memory1C8">00</td>
+               <td id="memory1C9">00</td>
+               <td id="memory1CA">00</td>
+               <td id="memory1CB">00</td>
+               <td id="memory1CC">00</td>
+               <td id="memory1CD">00</td>
+               <td id="memory1CE">00</td>
+               <td id="memory1CF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1D0</td>
+               <td id="memory1D0">00</td>
+               <td id="memory1D1">00</td>
+               <td id="memory1D2">00</td>
+               <td id="memory1D3">00</td>
+               <td id="memory1D4">00</td>
+               <td id="memory1D5">00</td>
+               <td id="memory1D6">00</td>
+               <td id="memory1D7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1D8</td>
+               <td id="memory1D8">00</td>
+               <td id="memory1D9">00</td>
+               <td id="memory1DA">00</td>
+               <td id="memory1DB">00</td>
+               <td id="memory1DC">00</td>
+               <td id="memory1DD">00</td>
+               <td id="memory1DE">00</td>
+               <td id="memory1DF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1E0</td>
+               <td id="memory1E0">00</td>
+               <td id="memory1E1">00</td>
+               <td id="memory1E2">00</td>
+               <td id="memory1E3">00</td>
+               <td id="memory1E4">00</td>
+               <td id="memory1E5">00</td>
+               <td id="memory1E6">00</td>
+               <td id="memory1E7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1E8</td>
+               <td id="memory1E8">00</td>
+               <td id="memory1E9">00</td>
+               <td id="memory1EA">00</td>
+               <td id="memory1EB">00</td>
+               <td id="memory1EC">00</td>
+               <td id="memory1ED">00</td>
+               <td id="memory1EE">00</td>
+               <td id="memory1EF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1F0</td>
+               <td id="memory1F0">00</td>
+               <td id="memory1F1">00</td>
+               <td id="memory1F2">00</td>
+               <td id="memory1F3">00</td>
+               <td id="memory1F4">00</td>
+               <td id="memory1F5">00</td>
+               <td id="memory1F6">00</td>
+               <td id="memory1F7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x1F8</td>
+               <td id="memory1F8">00</td>
+               <td id="memory1F9">00</td>
+               <td id="memory1FA">00</td>
+               <td id="memory1FB">00</td>
+               <td id="memory1FC">00</td>
+               <td id="memory1FD">00</td>
+               <td id="memory1FE">00</td>
+               <td id="memory1FF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x200</td>
+               <td id="memory200">00</td>
+               <td id="memory201">00</td>
+               <td id="memory202">00</td>
+               <td id="memory203">00</td>
+               <td id="memory204">00</td>
+               <td id="memory205">00</td>
+               <td id="memory206">00</td>
+               <td id="memory207">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x208</td>
+               <td id="memory208">00</td>
+               <td id="memory209">00</td>
+               <td id="memory20A">00</td>
+               <td id="memory20B">00</td>
+               <td id="memory20C">00</td>
+               <td id="memory20D">00</td>
+               <td id="memory20E">00</td>
+               <td id="memory20F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x210</td>
+               <td id="memory210">00</td>
+               <td id="memory211">00</td>
+               <td id="memory212">00</td>
+               <td id="memory213">00</td>
+               <td id="memory214">00</td>
+               <td id="memory215">00</td>
+               <td id="memory216">00</td>
+               <td id="memory217">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x218</td>
+               <td id="memory218">00</td>
+               <td id="memory219">00</td>
+               <td id="memory21A">00</td>
+               <td id="memory21B">00</td>
+               <td id="memory21C">00</td>
+               <td id="memory21D">00</td>
+               <td id="memory21E">00</td>
+               <td id="memory21F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x220</td>
+               <td id="memory220">00</td>
+               <td id="memory221">00</td>
+               <td id="memory222">00</td>
+               <td id="memory223">00</td>
+               <td id="memory224">00</td>
+               <td id="memory225">00</td>
+               <td id="memory226">00</td>
+               <td id="memory227">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x0228</td>
+               <td id="memory228">00</td>
+               <td id="memory229">00</td>
+               <td id="memory22A">00</td>
+               <td id="memory22B">00</td>
+               <td id="memory22C">00</td>
+               <td id="memory22D">00</td>
+               <td id="memory22E">00</td>
+               <td id="memory22F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x230</td>
+               <td id="memory230">00</td>
+               <td id="memory231">00</td>
+               <td id="memory232">00</td>
+               <td id="memory233">00</td>
+               <td id="memory234">00</td>
+               <td id="memory235">00</td>
+               <td id="memory236">00</td>
+               <td id="memory237">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x238</td>
+               <td id="memory238">00</td>
+               <td id="memory239">00</td>
+               <td id="memory23A">00</td>
+               <td id="memory23B">00</td>
+               <td id="memory23C">00</td>
+               <td id="memory23D">00</td>
+               <td id="memory23E">00</td>
+               <td id="memory23F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x240</td>
+               <td id="memory240">00</td>
+               <td id="memory241">00</td>
+               <td id="memory242">00</td>
+               <td id="memory243">00</td>
+               <td id="memory244">00</td>
+               <td id="memory245">00</td>
+               <td id="memory246">00</td>
+               <td id="memory247">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x248</td>
+               <td id="memory248">00</td>
+               <td id="memory249">00</td>
+               <td id="memory24A">00</td>
+               <td id="memory24B">00</td>
+               <td id="memory24C">00</td>
+               <td id="memory24D">00</td>
+               <td id="memory24E">00</td>
+               <td id="memory24F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x250</td>
+               <td id="memory250">00</td>
+               <td id="memory251">00</td>
+               <td id="memory252">00</td>
+               <td id="memory253">00</td>
+               <td id="memory254">00</td>
+               <td id="memory255">00</td>
+               <td id="memory256">00</td>
+               <td id="memory257">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x258</td>
+               <td id="memory258">00</td>
+               <td id="memory259">00</td>
+               <td id="memory25A">00</td>
+               <td id="memory25B">00</td>
+               <td id="memory25C">00</td>
+               <td id="memory25D">00</td>
+               <td id="memory25E">00</td>
+               <td id="memory25F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x260</td>
+               <td id="memory260">00</td>
+               <td id="memory261">00</td>
+               <td id="memory262">00</td>
+               <td id="memory263">00</td>
+               <td id="memory264">00</td>
+               <td id="memory265">00</td>
+               <td id="memory266">00</td>
+               <td id="memory267">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x268</td>
+               <td id="memory268">00</td>
+               <td id="memory269">00</td>
+               <td id="memory26A">00</td>
+               <td id="memory26B">00</td>
+               <td id="memory26C">00</td>
+               <td id="memory26D">00</td>
+               <td id="memory26E">00</td>
+               <td id="memory26F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x270</td>
+               <td id="memory270">00</td>
+               <td id="memory271">00</td>
+               <td id="memory272">00</td>
+               <td id="memory273">00</td>
+               <td id="memory274">00</td>
+               <td id="memory275">00</td>
+               <td id="memory276">00</td>
+               <td id="memory277">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x278</td>
+               <td id="memory278">00</td>
+               <td id="memory279">00</td>
+               <td id="memory27A">00</td>
+               <td id="memory27B">00</td>
+               <td id="memory27C">00</td>
+               <td id="memory27D">00</td>
+               <td id="memory27E">00</td>
+               <td id="memory27F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x280</td>
+               <td id="memory280">00</td>
+               <td id="memory281">00</td>
+               <td id="memory282">00</td>
+               <td id="memory283">00</td>
+               <td id="memory284">00</td>
+               <td id="memory285">00</td>
+               <td id="memory286">00</td>
+               <td id="memory287">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x288</td>
+               <td id="memory288">00</td>
+               <td id="memory289">00</td>
+               <td id="memory28A">00</td>
+               <td id="memory28B">00</td>
+               <td id="memory28C">00</td>
+               <td id="memory28D">00</td>
+               <td id="memory28E">00</td>
+               <td id="memory28F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x290</td>
+               <td id="memory290">00</td>
+               <td id="memory291">00</td>
+               <td id="memory292">00</td>
+               <td id="memory293">00</td>
+               <td id="memory294">00</td>
+               <td id="memory295">00</td>
+               <td id="memory296">00</td>
+               <td id="memory297">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x298</td>
+               <td id="memory298">00</td>
+               <td id="memory299">00</td>
+               <td id="memory29A">00</td>
+               <td id="memory29B">00</td>
+               <td id="memory29C">00</td>
+               <td id="memory29D">00</td>
+               <td id="memory29E">00</td>
+               <td id="memory29F">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2A0</td>
+               <td id="memory2A0">00</td>
+               <td id="memory2A1">00</td>
+               <td id="memory2A2">00</td>
+               <td id="memory2A3">00</td>
+               <td id="memory2A4">00</td>
+               <td id="memory2A5">00</td>
+               <td id="memory2A6">00</td>
+               <td id="memory2A7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2A8</td>
+               <td id="memory2A8">00</td>
+               <td id="memory2A9">00</td>
+               <td id="memory2AA">00</td>
+               <td id="memory2AB">00</td>
+               <td id="memory2AC">00</td>
+               <td id="memory2AD">00</td>
+               <td id="memory2AE">00</td>
+               <td id="memory2AF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2B0</td>
+               <td id="memory2B0">00</td>
+               <td id="memory2B1">00</td>
+               <td id="memory2B2">00</td>
+               <td id="memory2B3">00</td>
+               <td id="memory2B4">00</td>
+               <td id="memory2B5">00</td>
+               <td id="memory2B6">00</td>
+               <td id="memory2B7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2B8</td>
+               <td id="memory2B8">00</td>
+               <td id="memory2B9">00</td>
+               <td id="memory2BA">00</td>
+               <td id="memory2BB">00</td>
+               <td id="memory2BC">00</td>
+               <td id="memory2BD">00</td>
+               <td id="memory2BE">00</td>
+               <td id="memory2BF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2C0</td>
+               <td id="memory2C0">00</td>
+               <td id="memory2C1">00</td>
+               <td id="memory2C2">00</td>
+               <td id="memory2C3">00</td>
+               <td id="memory2C4">00</td>
+               <td id="memory2C5">00</td>
+               <td id="memory2C6">00</td>
+               <td id="memory2C7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2C8</td>
+               <td id="memory2C8">00</td>
+               <td id="memory2C9">00</td>
+               <td id="memory2CA">00</td>
+               <td id="memory2CB">00</td>
+               <td id="memory2CC">00</td>
+               <td id="memory2CD">00</td>
+               <td id="memory2CE">00</td>
+               <td id="memory2CF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2D0</td>
+               <td id="memory2D0">00</td>
+               <td id="memory2D1">00</td>
+               <td id="memory2D2">00</td>
+               <td id="memory2D3">00</td>
+               <td id="memory2D4">00</td>
+               <td id="memory2D5">00</td>
+               <td id="memory2D6">00</td>
+               <td id="memory2D7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2D8</td>
+               <td id="memory2D8">00</td>
+               <td id="memory2D9">00</td>
+               <td id="memory2DA">00</td>
+               <td id="memory2DB">00</td>
+               <td id="memory2DC">00</td>
+               <td id="memory2DD">00</td>
+               <td id="memory2DE">00</td>
+               <td id="memory2DF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2E0</td>
+               <td id="memory2E0">00</td>
+               <td id="memory2E1">00</td>
+               <td id="memory2E2">00</td>
+               <td id="memory2E3">00</td>
+               <td id="memory2E4">00</td>
+               <td id="memory2E5">00</td>
+               <td id="memory2E6">00</td>
+               <td id="memory2E7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2E8</td>
+               <td id="memory2E8">00</td>
+               <td id="memory2E9">00</td>
+               <td id="memory2EA">00</td>
+               <td id="memory2EB">00</td>
+               <td id="memory2EC">00</td>
+               <td id="memory2ED">00</td>
+               <td id="memory2EE">00</td>
+               <td id="memory2EF">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2F0</td>
+               <td id="memory2F0">00</td>
+               <td id="memory2F1">00</td>
+               <td id="memory2F2">00</td>
+               <td id="memory2F3">00</td>
+               <td id="memory2F4">00</td>
+               <td id="memory2F5">00</td>
+               <td id="memory2F6">00</td>
+               <td id="memory2F7">00</td>
+            </tr>
+            <tr>
+               <td style="font-weight: bold">0x2F8</td>
+               <td id="memory2F8">00</td>
+               <td id="memory2F9">00</td>
+               <td id="memory2FA">00</td>
+               <td id="memory2FB">00</td>
+               <td id="memory2FC">00</td>
+               <td id="memory2FD">00</td>
+               <td id="memory2FE">00</td>
+               <td id="memory2FF">00</td>
+            </tr>
+         </table>
+      </div>
+   </div>
+
+   <div id="divProcesses" style="margin-left:520px;">
+      <label>Processes</label>
+      <table id="tbProcesses"
+             style="width:370px;">
+         <tr>
+            <th>PID</th>
+            <th>PC</th>
+            <th>IR</th>
+            <th>ACC</th>
+            <th>X</th>
+            <th>Y</th>
+            <th>Z</th>
+            <th>State</th>
+            <th>Location</th>
+         </tr>
+         <tr>
+            <td id="processesPID">0</td>
+            <td id="processesPC">0</td>
+            <td id="processesIR">0</td>
+            <td id="processesACC">0</td>
+            <td id="processesX">0</td>
+            <td id="processesY">0</td>
+            <td id="processesZ">0</td>
+            <td id="processesState">0</td>
+            <td id="processesLocation">0</td>
+         </tr>
+      </table>
    </div>
 </div>
 

@@ -37,7 +37,7 @@ var _DrawingContext: any;                // = _Canvas.getContext("2d");  // Assi
 var _DefaultFontFamily: string = "sans"; // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.
 var _DefaultFontSize: number = 13;
 var _FontHeightMargin: number = 4;       // Additional space added to font size when advancing a line.
-
+var _UserCodeTextArea;
 var _Trace: boolean = true;              // Default the OS trace to be on.
 
 // The OS Kernel and its queues.
@@ -66,8 +66,25 @@ var _hardwareClockID: number = null;
 var Glados: any = null;  // This is the function Glados() in glados-ip*.js http://alanclasses.github.io/TSOS/test/ .
 var _GLaDOS: any = null; // If the above is linked in, this is the instantiated instance of Glados.
 
-//pid in load function in shell file
-var pid: number = 0;
+//Process ID in load function in shell file
+var PID: number = 0;
+//Process Control Block
+var PCBList = [];
+var currentPCB = null;
+var readyPCBList = [];
+var schedulingAlgorithm = "Round Robin";
+
+//Hardware (host)
+var _CPU: RobOS.Cpu;
+var _Memory: RobOS.Memory;
+var _MemoryAccessor: RobOS.MemoryAccessor;
+//Software (OS)
+var _MemoryManager: any = null;
+
+
+//Single Step
+var _SingleStep = false;
+var _NextStep = false;
 
 var onDocumentLoad = function() {
 	RobOS.Control.hostInit();

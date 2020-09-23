@@ -24,6 +24,8 @@ var RobOS;
             // This is called from index.html's onLoad event via the onDocumentLoad function pointer.
             // Get a global reference to the canvas.  TODO: Should we move this stuff into a Display Device Driver?
             _Canvas = document.getElementById('display');
+            //Get a global reference to the User Code Input (upi)
+            _UserCodeTextArea = document.getElementById("taProgramInput");
             // Get a global reference to the drawing context.
             _DrawingContext = _Canvas.getContext("2d");
             // Enable the added-in canvas text functions (see canvastext.ts for provenance and details).
@@ -64,11 +66,15 @@ var RobOS;
             // .. enable the Halt and Reset buttons ...
             document.getElementById("btnHaltOS").disabled = false;
             document.getElementById("btnReset").disabled = false;
+            document.getElementById("btnSingleStepOn").disabled = false;
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new RobOS.Cpu(); // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init(); //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+            _Memory = new RobOS.Memory();
+            _Memory.init();
+            _MemoryAccessor = new RobOS.MemoryAccessor();
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(RobOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.
@@ -90,6 +96,29 @@ var RobOS;
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
+        }
+        static hostBtnSingleStepOn_click(btn) {
+            //turn single step on
+            _SingleStep = true;
+            btn.disabled = true;
+            //Enable the single step off button
+            //Allow for single step to be turned off
+            document.getElementById("btnSingleStepOff").disabled = false;
+            //enable Next Step button
+            document.getElementById("btnNextStep").disabled = false;
+        }
+        static hostBtnSingleStepOff_click(btn) {
+            //turn single step off
+            _SingleStep = false;
+            btn.disabled = true;
+            //enable Single Step On button
+            document.getElementById("btnSingleStepOn").disabled = false;
+            //disable Next Step button
+            document.getElementById("btnNextStep").disabled = true;
+        }
+        static hostBtnNextStep_click(btn) {
+            //Go to next step by turning to true
+            _NextStep = true;
         }
     }
     RobOS.Control = Control;
