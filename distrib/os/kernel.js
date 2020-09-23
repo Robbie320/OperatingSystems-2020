@@ -29,6 +29,8 @@ var RobOS;
             _krnKeyboardDriver = new RobOS.DeviceDriverKeyboard(); // Construct it.
             _krnKeyboardDriver.driverEntry(); // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
+            //Initialize Memory Manager
+            _MemoryManager = new RobOS.MemoryManager();
             //
             // ... more?
             //

@@ -16,9 +16,7 @@ const CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 seco
 const TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ = 1;
-
 var today = new Date();
-
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
@@ -31,6 +29,7 @@ var _DrawingContext; // = _Canvas.getContext("2d");  // Assigned here for type s
 var _DefaultFontFamily = "sans"; // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.
 var _DefaultFontSize = 13;
 var _FontHeightMargin = 4; // Additional space added to font size when advancing a line.
+var _UserCodeTextArea;
 var _Trace = true; // Default the OS trace to be on.
 // The OS Kernel and its queues.
 var _Kernel;
@@ -49,10 +48,24 @@ var _SarcasticMode = false;
 var _krnKeyboardDriver = null;
 var _hardwareClockID = null;
 // For testing (and enrichment)...
-var Glados = null; // This is the function Glados() in glados-ip*.js RobOS/test/ .
+var Glados = null; // This is the function Glados() in glados-ip*.js http://alanclasses.github.io/TSOS/test/ .
 var _GLaDOS = null; // If the above is linked in, this is the instantiated instance of Glados.
-//pid in load function in shell file
-var pid = 0;
+//Process ID in load function in shell file
+var PID = 0;
+//Process Control Block
+var PCBList = [];
+var currentPCB = null;
+var readyPCBList = [];
+var schedulingAlgorithm = "Round Robin";
+//Hardware (host)
+var _CPU;
+var _Memory;
+var _MemoryAccessor;
+//Software (OS)
+var _MemoryManager = null;
+//Single Step
+var _SingleStep = false;
+var _NextStep = false;
 var onDocumentLoad = function () {
     RobOS.Control.hostInit();
 };

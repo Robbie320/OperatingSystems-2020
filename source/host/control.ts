@@ -28,6 +28,9 @@ module RobOS {
             // Get a global reference to the canvas.  TODO: Should we move this stuff into a Display Device Driver?
             _Canvas = <HTMLCanvasElement>document.getElementById('display');
 
+            //Get a global reference to the User Code Input (upi)
+            _UserCodeTextArea = document.getElementById("taProgramInput");
+
             // Get a global reference to the drawing context.
             _DrawingContext = _Canvas.getContext("2d");
 
@@ -80,6 +83,7 @@ module RobOS {
             // .. enable the Halt and Reset buttons ...
             (<HTMLButtonElement>document.getElementById("btnHaltOS")).disabled = false;
             (<HTMLButtonElement>document.getElementById("btnReset")).disabled = false;
+            (<HTMLButtonElement>document.getElementById("btnSingleStepOn")).disabled = false;
 
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
@@ -87,6 +91,9 @@ module RobOS {
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+            _Memory = new Memory();
+            _Memory.init();
+            _MemoryAccessor = new MemoryAccessor();
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
@@ -111,6 +118,30 @@ module RobOS {
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
+        }
+        public static hostBtnSingleStepOn_click(btn): void {
+            //turn single step on
+            _SingleStep = true;
+            btn.disabled = true;
+            //Enable the single step off button
+            //Allow for single step to be turned off
+            (<HTMLButtonElement>document.getElementById("btnSingleStepOff")).disabled = false;
+            //enable Next Step button
+            (<HTMLButtonElement>document.getElementById("btnNextStep")).disabled = false;
+            
+        }
+        public static hostBtnSingleStepOff_click(btn): void {
+            //turn single step off
+            _SingleStep = false;
+            btn.disabled = true;
+            //enable Single Step On button
+            (<HTMLButtonElement>document.getElementById("btnSingleStepOn")).disabled = false;
+            //disable Next Step button
+            (<HTMLButtonElement>document.getElementById("btnNextStep")).disabled = true;
+        }
+        public static hostBtnNextStep_click(btn): void {
+            //Go to next step by turning to true
+            _NextStep = true;
         }
     }
 }

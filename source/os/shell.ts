@@ -108,6 +108,12 @@ module RobOS {
                 "load",
                 " - Load to validate the user code in the HTML5 text area.");
             this.commandList[this.commandList.length] = sc;
+
+            // run
+            sc = new ShellCommand(this.shellRun,
+                "run",
+                "<pid> - Runs a program that's already loaded into memory.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -337,7 +343,10 @@ module RobOS {
                         _StdOut.putText("Test BSOD message.");
                         break;
                     case "load":
-                        _StdOut.putText("Validate the user code in the HTML5 text area.")
+                        _StdOut.putText("Validate the user code in the HTML5 text area.");
+                        break;
+                    case "run":
+                        _StdOut.putText("Runs a program that's already loaded into memory.");
                         break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -435,7 +444,9 @@ module RobOS {
             //Valid hex values to make program
             var validHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', ' '];
             //User Program Input
-            var upi = document.getElementById("taProgramInput").value.trim();
+            var upi = _UserCodeTextArea.value;
+            upi = RobOS.Utils.trim(upi);
+            
             //Validate Hex Characters
             for (var i = 0; i < upi.length; i++) {
                 //Check if each character is in array
@@ -450,11 +461,29 @@ module RobOS {
             //Loading Program
             if(loaded == true){
                 //pid initialized in globals.ts 
-                _StdOut.putText("Program loaded. PID: " + pid + ".");
-                pid += 1;
+                _StdOut.putText("Program loaded. PID: " + PID + ".");
+                //Increment PID
+                PID += 1;
                 _StdOut.advanceLine();
-                _StdOut.putText(upi);
+                _StdOut.putText(upi);//user program input
                 
+            }
+        }
+        public shellRun(args: String[]) {
+            //Check that arg is not empty and is a number
+            if (args.length > 0 && (!isNaN(Number(args[0])))){
+                let enteredPID = Number(args[0]);
+                //check if PID is loaded in memory
+                if(_MemoryManager) {
+                    
+                }
+                else {
+                    _StdOut.putText("PID number is invalid.");
+                    _StdOut.putText("Please enter a valid PID number.");
+                }
+            }
+            else {
+                _StdOut.putText("Please enter a PID number.");
             }
         }
     }
