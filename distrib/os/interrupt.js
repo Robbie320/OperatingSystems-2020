@@ -7,6 +7,8 @@ var RobOS;
         constructor(irq, params) {
             this.irq = irq;
             this.params = params;
+            this.irq = irq;
+            this.params = params;
         }
     }
     RobOS.Interrupt = Interrupt;

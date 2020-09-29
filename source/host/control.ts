@@ -139,9 +139,113 @@ module RobOS {
             //disable Next Step button
             (<HTMLButtonElement>document.getElementById("btnNextStep")).disabled = true;
         }
+        //UPDATE THE TABLES//
         public static hostBtnNextStep_click(btn): void {
             //Go to next step by turning to true
             _NextStep = true;
+        }
+        public static memoryTbUpdate() {
+            this.clearMemoryTb();
+            for(var m = 0; m < 256; m++) {
+                var entered = document.getElementById("memory" + m);
+                /*if(currentPCB.section = "1") {*/
+                    entered.innerHTML = _Memory.sectOneArr[m];
+                /*} else if(currentPCB.section = "2") {
+                    entered.innerHTML = _Memory.sectOneArr[m];
+                } else if(currentPCB.section = "3") {
+                    entered.innerHTML = _Memory.sectOneArr[m];
+                }*/
+                if(entered.innerHTML == "") {
+                    entered.innerHTML = "00";
+                }
+            }
+        }
+        public static clearMemoryTb() {
+            for(var m = 0; m < 768; m++) {
+                var entered = document.getElementById("memory" + m);
+                entered.innerHTML = "00";
+            }
+        }
+        public static cpuTbUpdate() {
+            if (_CPU.isExecuting) {
+                var cpuPC = document.getElementById("cpuPC");
+                cpuPC.innerHTML = _CPU.PC.toString(16).toUpperCase();
+                var cpuIR = document.getElementById("cpuIR");
+                cpuIR.innerHTML = _CPU.IR.toString().toUpperCase();;
+                var cpuACC = document.getElementById("cpuACC");
+                cpuACC.innerHTML = _CPU.ACC.toString(16).toUpperCase();
+                var cpuX = document.getElementById("cpuX");
+                cpuX.innerHTML = _CPU.Xreg.toString(16).toUpperCase();
+                var cpuY = document.getElementById("cpuY");
+                cpuY.innerHTML = _CPU.Yreg.toString(16).toUpperCase();
+                var cpuZ = document.getElementById("cpuZ");
+                cpuZ.innerHTML = _CPU.Zflag.toString(16).toUpperCase();
+            }
+            else {
+                this.clearCPUTb();
+            }
+        }
+        public static clearCPUTb() {
+            var cpuPC = document.getElementById("cpuPC");
+            cpuPC.innerHTML = "0";
+            var cpuIR = document.getElementById("cpuIR");
+            cpuIR.innerHTML = "0";
+            var cpuACC = document.getElementById("cpuACC");
+            cpuACC.innerHTML = "0";
+            var cpuX = document.getElementById("cpuX");
+            cpuX.innerHTML = "0";
+            var cpuY = document.getElementById("cpuY");
+            cpuY.innerHTML = "0";
+            var cpuZ = document.getElementById("cpuZ");
+            cpuZ.innerHTML = "0";
+        }
+        public static proccessesTbUpdate() {
+            this.clearprocessesTb();
+            for(var p = 0; p < PCBList.length; p++) {
+                var processesPID = document.getElementById("processesPID");
+                processesPID.innerHTML = PCBList[p].PID.toString(16).toUpperCase();
+                var processesPC = document.getElementById("processesPC");
+                processesPC.innerHTML = PCBList[p].PC.toString(16).toUpperCase();
+                var processesIR = document.getElementById("processesIR");
+                processesIR.innerHTML = PCBList[p].IR.toString(16).toUpperCase();
+                var processesACC = document.getElementById("processesACC");
+                processesACC.innerHTML = PCBList[p].ACC.toString(16).toUpperCase();
+                var processesX = document.getElementById("processesX");
+                processesX.innerHTML = PCBList[p].Xreg.toString(16).toUpperCase();
+                var processesY = document.getElementById("processesY");
+                processesY.innerHTML = PCBList[p].Yreg.toString(16).toUpperCase();
+                var processesZ = document.getElementById("processesZ");
+                processesZ.innerHTML = PCBList[p].Zflag.toString(16).toUpperCase();
+                var processesState = document.getElementById("processesState");
+                processesState.innerHTML = PCBList[p].state.toString(16).toUpperCase();
+                var processesLocation = document.getElementById("processesLocation");
+                processesLocation.innerHTML = PCBList[p].location.toString(16).toUpperCase();
+            }
+        }
+        public static clearprocessesTb() {
+            var processesPID = document.getElementById("processesPID");
+            processesPID.innerHTML = "0";
+            var processesPC = document.getElementById("processesPC");
+            processesPC.innerHTML = "0";
+            var processesIR = document.getElementById("processesIR");
+            processesIR.innerHTML = "0";
+            var processesACC = document.getElementById("processesACC");
+            processesACC.innerHTML = "0";
+            var processesX = document.getElementById("processesX");
+            processesX.innerHTML = "0";
+            var processesY = document.getElementById("processesY");
+            processesY.innerHTML = "0";
+            var processesZ = document.getElementById("processesZ");
+            processesZ.innerHTML = "0";
+            var processesState = document.getElementById("processesState");
+            processesState.innerHTML = "0";
+            var processesLocation = document.getElementById("processesLocation");
+            processesLocation.innerHTML = "0";
+        }
+        public static updateAllTables() {
+            this.memoryTbUpdate;
+            this.cpuTbUpdate;
+            this.proccessesTbUpdate;
         }
     }
 }

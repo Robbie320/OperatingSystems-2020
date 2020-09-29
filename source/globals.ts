@@ -67,12 +67,13 @@ var Glados: any = null;  // This is the function Glados() in glados-ip*.js http:
 var _GLaDOS: any = null; // If the above is linked in, this is the instantiated instance of Glados.
 
 //Process ID in load function in shell file
-var PID: number = 0;
+var _PID: number = 0;
 //Process Control Block
+var _PCB: RobOS.PCB;
 var PCBList = [];
 var currentPCB = null;
-var readyPCBList = [];
-var schedulingAlgorithm = "Round Robin";
+var readyPCBQueue = [];
+//var schedulingAlgorithm = "Round Robin";
 
 //Hardware (host)
 var _CPU: RobOS.Cpu;

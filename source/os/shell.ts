@@ -439,51 +439,119 @@ module RobOS {
             _Kernel.krnShutdown();
         }
         public shellLoad(args: string[]){
-            var loaded = true;
-
+            var valid = true;
             //Valid hex values to make program
-            var validHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', ' '];
+            var validHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+            var validOPCodes = ['A9', 'AD', '8D', '6D', 'A2', 'AE', 'A0', 'AC', 'EA', '00', 'EC', 'D0', 'EE', 'FF'];
             //User Program Input
+            _UserCodeTextArea = document.getElementById("taProgramInput");
             var upi = _UserCodeTextArea.value;
-            upi = RobOS.Utils.trim(upi);
-            
-            //Validate Hex Characters
+            //Split at Space into array
+            upi = upi.toUpperCase();
+            var hexChrArr = upi.split('');
+            var OPCodeArr = upi.split(' ');
+            upi = upi.replace(/\s/g, '');
+
+            //Checks for only hex characters
             for (var i = 0; i < upi.length; i++) {
                 //Check if each character is in array
-                if(validHex.indexOf(upi[i].toUpperCase()) == -1) {
+                if(validHex.indexOf(upi[i]) == -1) {
                     _StdOut.putText("LOAD ERROR: - Please only enter valid hex characters (0-9, a-z, and A-Z).");
                     _StdOut.advanceLine();
-                    _StdOut.putText("INVALID CHARACTER: " + upi[i].toUpperCase());
+                    _StdOut.putText("INVALID CHARACTER: " + upi[i]);
                     _StdOut.advanceLine();
-                    loaded = false;
+                    
+                    valid = false;
                 }
             }
+            //TODO: Validate OP Codes
+            
             //Loading Program
-            if(loaded == true){
-                //pid initialized in globals.ts 
-                _StdOut.putText("Program loaded. PID: " + PID + ".");
-                //Increment PID
-                PID += 1;
-                _StdOut.advanceLine();
-                _StdOut.putText(upi);//user program input
-                
+            if(valid == true){
+                //_PID initialized in globals.ts
+                //_StdOut.putText("Entered hex OP codes are valid.");
+                //_StdOut.advanceLine();
+                if(_MemoryManager.checkMemoryAvailability()) {
+                    var pcb = new RobOS.PCB();
+                    pcb.PID = _PID;
+                    currentPCB = pcb.PID;
+                    pcb.location = "Memory";
+                    
+                    //Assign to memory section
+                    pcb.section = _MemoryManager.assignMemory();
+                    PCBList[PCBList.length] = pcb;
+                    //Load Memory
+                    _MemoryManager.loadMemory(OPCodeArr, pcb.section, pcb.PID);
+                    //Update PCB's IR
+                    pcb.IR = _MemoryAccessor.readMemoryHex(pcb.section, pcb.PC);
+                    
+                    //Update the Memory Table
+                    RobOS.Control.memoryTbUpdate();
+                    //Update the Processes Table
+                    RobOS.Control.proccessesTbUpdate();
+
+                    //Program successfully loaded
+                    _StdOut.putText("Program loaded.");
+                    _StdOut.advanceLine();
+                    _StdOut.putText("PID: " + pcb.PID + ".");
+                    //_StdOut.putText(upi); //print user program input to debug/validate
+                    //Increment PID
+                    _PID++;
+                }
+                else {
+                    _StdOut.putText("Memory is full.");
+                }
             }
         }
         public shellRun(args: String[]) {
             //Check that arg is not empty and is a number
             if (args.length > 0 && (!isNaN(Number(args[0])))){
-                let enteredPID = Number(args[0]);
+                var enteredPID = Number(args[0]);
                 //check if PID is loaded in memory
-                if(_MemoryManager) {
-                    
+                var validPID = false;
+                for(var PCB of PCBList) {
+                    if(PCB.PID == enteredPID) {
+                        validPID = true;
+                    }
                 }
-                else {
-                    _StdOut.putText("PID number is invalid.");
+                if(validPID == true) {
+                    _CPU.PC = currentPCB.PC;
+                    _CPU.IR = currentPCB.IR;
+                    _CPU.ACC = currentPCB.ACC;
+                    _CPU.Xreg = currentPCB.Xreg;
+                    _CPU.Yreg = currentPCB.Yreg;
+                    _CPU.section = currentPCB.section
+                    _CPU.Zflag = currentPCB.Zflag;
+                    
+                    var index;
+                    for(index = 0; index < PCBList.length; index++){
+                        if(PCBList[index].PID == enteredPID) {
+                            return index;
+                        }
+                    }
+                    PCBList[index].state = "Waiting";
+                    var PCB;
+                    for(PCB of PCBList) {
+                        if(PCB.PID == enteredPID) {
+                            return PCB;
+                        }
+                    }
+                    readyPCBQueue[readyPCBQueue.length] = PCB;
+                    
+                    //initalize CPU
+                    currentPCB = null;
+                    _CPU.isExecuting = true;
+                    var interrupt = new RobOS.Interrupt(4, PCBList[0]);
+                    _KernelInterruptQueue.enqueue(interrupt);
+                    _CPU.init();
+                    for(var i = 0; i < PCBList[PCBList[enteredPID].length]; i++) {
+                        _CPU.cycle();
+                    }
+                }else {
                     _StdOut.putText("Please enter a valid PID number.");
                 }
-            }
-            else {
-                _StdOut.putText("Please enter a PID number.");
+            } else {
+                _StdOut.putText("Please put a number for the PID.");
             }
         }
     }
