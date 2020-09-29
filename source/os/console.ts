@@ -77,11 +77,41 @@ module RobOS {
                 decided to write one function and use the term "text" to connote string or char.
             */
             if (text !== "") {
-                // Draw the text at the current X and Y coordinates.
-                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
-                // Move the current X position.
-                var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
-                this.currentXPosition = this.currentXPosition + offset;
+                //HANDLE LINE WRAP//
+                //width from current position until the end of the canvas
+                var remainingWidth = _Canvas.width - this.currentXPosition;
+                //Empty/initalize buffer
+                var buffer = "";
+                var wrappedText = [];
+                while(text.length > 0) {
+                    while(text.length > 0 && _DrawingContext.measureText(this.currentFont, this.currentFontSize, (buffer + text.charAt(0))) <= remainingWidth) {
+                        //add text to buffer
+                        buffer += text.charAt(0);
+                        text = text.slice(1);
+                    }
+                    //push wrapped text to buffer
+                    wrappedText.push(buffer);
+                    //empty buffer
+                    buffer = "";
+                    //new line (entire width)
+                    remainingWidth = _Canvas.width;
+                }
+                //END END HANDLE LINE WRAP//
+
+                //IMPLEMENT LINE WRAP//
+                for(var i = 0; i < wrappedText.length; i ++) {
+                    var line = wrappedText[i];
+
+                    // Draw the text at the current X and Y coordinates.
+                    _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, line);
+                    // Move the current X position.
+                    var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, line);
+                    this.currentXPosition = this.currentXPosition + offset;
+                    //
+                    if(i + 1 < wrappedText.length) {
+                        this.advanceLine();
+                    }
+                }
             }
         }
         backspace() {
@@ -98,6 +128,7 @@ module RobOS {
             
             // Remove character from buffer
             this.buffer = this.buffer.slice(0, -1); 
+            //TODO: Fix line wrap bakspacing
         }
         inputHistory(chr) {
             if (chr == String.fromCharCode(38) && this.cmdHistoryValue > 0){
@@ -292,32 +323,45 @@ module RobOS {
                             break;
                     }
                 }else if(cmd[0] == "r") {
-                    command = "rot13";
-                    switch(cmd) {
-                        case "r":
-                            //delete letters in buffer already
-                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
-                            this.buffer = command;
-                            this.putText(this.buffer);
-                            break;
-                        case "ro":
-                            //delete letters in buffer already
-                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
-                            this.buffer = command;
-                            this.putText(this.buffer);
-                            break;
-                        case "rot":
-                            //delete letters in buffer already
-                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
-                            this.buffer = command;
-                            this.putText(this.buffer);
-                            break;
-                        case "rot1":
-                            //delete letters in buffer already
-                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
-                            this.buffer = command;
-                            this.putText(this.buffer);
-                            break;
+                    if(cmd[1] == "o") {
+                        command = "rot13";
+                        switch(cmd) {
+                            case "r":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "ro":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "rot":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "rot1":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }
+                    }
+                    if(cmd[1] == "u") {
+                        command = "run"
+                        switch(cmd) {
+                            case "ru":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }     
                     }
                 }else if(cmd[0] == "p") {
                     command = "prompt";

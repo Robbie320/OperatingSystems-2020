@@ -51,12 +51,13 @@ var _hardwareClockID = null;
 var Glados = null; // This is the function Glados() in glados-ip*.js http://alanclasses.github.io/TSOS/test/ .
 var _GLaDOS = null; // If the above is linked in, this is the instantiated instance of Glados.
 //Process ID in load function in shell file
-var PID = 0;
+var _PID = 0;
 //Process Control Block
+var _PCB;
 var PCBList = [];
 var currentPCB = null;
-var readyPCBList = [];
-var schedulingAlgorithm = "Round Robin";
+var readyPCBQueue = [];
+//var schedulingAlgorithm = "Round Robin";
 //Hardware (host)
 var _CPU;
 var _Memory;

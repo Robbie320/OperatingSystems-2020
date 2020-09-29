@@ -1,31 +1,26 @@
 /* ------------
-     Memory.ts
+Memory.ts
 
-     
-     ------------ */
+
+------------ */
 var RobOS;
 (function (RobOS) {
     class Memory {
-        constructor(sectOneArr, sectOneMin, sectOneMax, sectTwoArr, sectTwoMin, sectTwoMax, sectThreeArr, sectThreeMin, sectThreeMax) {
+        constructor(sectOneArr = new Array(256), sectOneAvailable = true, sectTwoArr = new Array(256), sectTwoAvailable = true, sectThreeArr = new Array(256), sectThreeAvailable = true) {
             this.sectOneArr = sectOneArr;
-            this.sectOneMin = sectOneMin;
-            this.sectOneMax = sectOneMax;
+            this.sectOneAvailable = sectOneAvailable;
             this.sectTwoArr = sectTwoArr;
-            this.sectTwoMin = sectTwoMin;
-            this.sectTwoMax = sectTwoMax;
+            this.sectTwoAvailable = sectTwoAvailable;
             this.sectThreeArr = sectThreeArr;
-            this.sectThreeMin = sectThreeMin;
-            this.sectThreeMax = sectThreeMax;
+            this.sectThreeAvailable = sectThreeAvailable;
             //Total memory between 3 segments is 768
-            this.sectOneArr = new Array(255);
-            this.sectOneMin = 0;
-            this.sectOneMax = 255;
-            this.sectTwoArr = new Array(255);
-            this.sectTwoMin = 0;
-            this.sectTwoMax = 255;
-            this.sectThreeArr = new Array(255);
-            this.sectThreeMin = 0;
-            this.sectThreeMax = 255;
+            this.sectOneArr = new Array(256);
+            this.sectOneAvailable = sectOneAvailable;
+            this.sectTwoArr = new Array(256);
+            this.sectTwoAvailable = sectTwoAvailable;
+            this.sectThreeArr = new Array(256);
+            this.sectThreeAvailable = sectThreeAvailable;
+            this.init();
         }
         init() {
             //set all memory to "00"
