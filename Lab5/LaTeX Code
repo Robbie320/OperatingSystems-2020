@@ -1,0 +1,181 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% CMPT 424
+% Fall 2020
+% Lab 5
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Short Sectioned Assignment
+% LaTeX Template
+% Version 1.0 (5/5/12)
+%
+% This template has been downloaded from: http://www.LaTeXTemplates.com
+% Original author: % Frits Wenneker (http://www.howtotex.com)
+% License: CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+% Modified by Alan G. Labouseur  - alan@labouseur.com
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[letterpaper, 10pt,DIV=13]{scrartcl} 
+
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage{amsmath,amsfonts,amsthm,xfrac} % Math packages
+\usepackage{sectsty} % Allows customizing section commands
+\usepackage{graphicx}
+\usepackage[lined,linesnumbered,commentsnumbered]{algorithm2e}
+\usepackage{listings}
+\usepackage{parskip}
+\usepackage{lastpage}
+\usepackage{pgfgantt}
+
+\allsectionsfont{\normalfont\scshape} % Make all section titles in default font and small caps.
+
+\usepackage{fancyhdr} % Custom headers and footers
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{page \thepage\ of \pageref{LastPage}} % Page numbering for right footer
+
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{13.6pt} % Customize the height of the header
+
+\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs.
+
+\binoppenalty=3000
+\relpenalty=3000
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{	
+   \normalfont \normalsize 
+   \textsc{CMPT 424 - Fall 2020 - Dr. Labouseur} \\[10pt] % Header stuff.
+   \horrule{0.5pt} \\[0.25cm] 	% Top horizontal rule
+   \huge Lab 5  \\     	    % Assignment title
+   \horrule{0.5pt} \\[0.25cm] 	% Bottom horizontal rule
+}
+
+\author{Robert Perrone \\ \normalsize Robert.Perrone1@Marist.edu}
+
+\date{\normalsize\today} 	% Today's date.
+
+\begin{document}
+\maketitle % Print the title
+
+%----------------------------------------------------------------------------------------
+%   start PROBLEM ONE
+%----------------------------------------------------------------------------------------
+\section{Scheduling}
+Consider the following set of processes, with the length of the CPU burst given in milliseconds:
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{c c c c}
+    Process  &  Burst Time  &  Priority\\ [0.5ex]
+    %heading
+    \hline
+    P1  &  10  &  3\\
+    P2  &  1   &  1\\
+    P3  &  2   &  3\\
+    P4  &  1   &  4\\
+    P5  &  5   &  2
+    \end{tabular}
+\end{table}
+
+The processes are assumed to have arrived in the order P1, P2, P3, P4, P5, all at time 0.
+
+\newpage
+a. Draw four Gantt charts that illustrate the execution of these process using the following scheduling algorithms: FCFS, SJF, non-preemptive priority (a smaller priority number implies a higher priority), and RR (quantum = 1)
+
+
+\begin{ganttchart}{0}{18}
+    \gantttitle{FCFS}{19}\\
+    \gantttitlelist{0,...,18}{1}\\
+    \ganttbar{P1}{0}{9}\\
+    \ganttbar{P2}{10}{10}\\
+    \ganttbar{P3}{11}{12}\\
+    \ganttbar{P4}{13}{13}\\
+    \ganttbar{P5}{14}{18}
+\end{ganttchart}
+
+\begin{ganttchart}{0}{18}
+    \gantttitle{SJF}{19}\\
+    \gantttitlelist{0,...,18}{1}\\
+    \ganttbar{P1}{9}{18}\\
+    \ganttbar{P2}{0}{0}\\
+    \ganttbar{P3}{2}{3}\\
+    \ganttbar{P4}{1}{1}\\
+    \ganttbar{P5}{4}{8}
+\end{ganttchart}
+
+\begin{ganttchart}{0}{18}
+    \gantttitle{Non-preemptive Priority}{19}\\
+    \gantttitlelist{0,...,18}{1}\\
+    \ganttbar{P1}{6}{15}\\
+    \ganttbar{P2}{0}{0}\\
+    \ganttbar{P3}{16}{17}\\
+    \ganttbar{P4}{18}{18}\\
+    \ganttbar{P5}{1}{5}
+\end{ganttchart}
+
+\begin{ganttchart}{0}{18}
+    \gantttitle{Round Robin (Quantum = 1)}{19}\\
+    \gantttitlelist{0,...,18}{1}\\
+    \ganttbar{P1}{0}{0}
+    \ganttbar{P1}{5}{5}
+    \ganttbar{P1}{8}{8}
+    \ganttbar{P1}{10}{10}
+    \ganttbar{P1}{12}{12}
+    \ganttbar{P1}{14}{18}\\
+    
+    \ganttbar{P2}{1}{1}\\
+    
+    \ganttbar{P3}{2}{2}
+    \ganttbar{P3}{6}{6}\\
+    
+    \ganttbar{P4}{3}{3}\\
+    
+    \ganttbar{P5}{4}{4}
+    \ganttbar{P5}{7}{7}
+    \ganttbar{P5}{9}{9}
+    \ganttbar{P5}{11}{11}
+    \ganttbar{P5}{13}{13}
+\end{ganttchart}
+
+\newpage
+b. What is the turnaround time of each process for each of the scheduling algorithms in part a?\\
+
+FCFS: (10 + 11 + 13 + 14 + 19)/5 = 67/5\\
+JFS: (19 + 1 + 4 + 2 + 9)/5 = 35/5\\
+Non-preemptive Priority: (16 + 1 + 18 + 19 + 6)/5 = 60/5\\
+Round Robin (Quantum = 1): (19 + 2 + 7 + 4 + 14)/5 = 46/5\\
+
+c. What is the waiting time of each process for each of these scheduling algorithms?\\
+
+FCFS: (0 + 10 + 11 + 13 + 14)/5 = 48/5\\
+JFS: (9 + 0 + 2 + 1 + 4)/5 = 16/5\\
+Non-preemptive Priority: (6 + 0 + 16 + 18 + 1)/5 = 41/5\\
+Round Robin (Quantum = 1): (9 + 1 + 5 + 3 + 9)/5 = 27/5\\
+
+d. Which of the algorithms results in the minimum average waiting time (over all processes)?\\
+
+Shortest Job First (SJF) results in the minimum average waiting time over all processes.
+
+\end{document}
