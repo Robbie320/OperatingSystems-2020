@@ -474,8 +474,9 @@ module RobOS {
                 if(_MemoryManager.checkMemoryAvailability()) {
                     var pcb = new RobOS.PCB();
                     pcb.PID = _PID;
-                    currentPCB = pcb.PID;
+                    currentPCB = pcb;
                     pcb.location = "Memory";
+                    pcb.state = "Waiting";
                     
                     //Assign to memory section
                     pcb.section = _MemoryManager.assignMemory();
@@ -485,6 +486,8 @@ module RobOS {
                     //Update PCB's IR
                     pcb.IR = _MemoryAccessor.readMemoryHex(pcb.section, pcb.PC);
                     
+                    currentPCB = pcb;
+                    
                     //Update the Memory Table
                     RobOS.Control.memoryTbUpdate();
                     //Update the Processes Table
@@ -493,7 +496,7 @@ module RobOS {
                     //Program successfully loaded
                     _StdOut.putText("Program loaded.");
                     _StdOut.advanceLine();
-                    _StdOut.putText("PID: " + pcb.PID + ".");
+                    _StdOut.putText("PID: " + pcb.PID);
                     //_StdOut.putText(upi); //print user program input to debug/validate
                     //Increment PID
                     _PID++;
@@ -515,38 +518,14 @@ module RobOS {
                     }
                 }
                 if(validPID == true) {
-                    _CPU.PC = currentPCB.PC;
-                    _CPU.IR = currentPCB.IR;
-                    _CPU.ACC = currentPCB.ACC;
-                    _CPU.Xreg = currentPCB.Xreg;
-                    _CPU.Yreg = currentPCB.Yreg;
-                    _CPU.section = currentPCB.section
-                    _CPU.Zflag = currentPCB.Zflag;
-                    
-                    var index;
-                    for(index = 0; index < PCBList.length; index++){
-                        if(PCBList[index].PID == enteredPID) {
-                            return index;
-                        }
-                    }
-                    PCBList[index].state = "Waiting";
-                    var PCB;
-                    for(PCB of PCBList) {
-                        if(PCB.PID == enteredPID) {
-                            return PCB;
-                        }
-                    }
-                    readyPCBQueue[readyPCBQueue.length] = PCB;
-                    
-                    //initalize CPU
-                    currentPCB = null;
+                    PCBList[_MemoryManager.getIndex(PCBList, enteredPID)].state = "Ready";
+
+                    readyPCBQueue[readyPCBQueue.length] = _MemoryManager.getPCB(enteredPID);
+
                     _CPU.isExecuting = true;
-                    var interrupt = new RobOS.Interrupt(4, PCBList[0]);
-                    _KernelInterruptQueue.enqueue(interrupt);
-                    _CPU.init();
-                    for(var i = 0; i < PCBList[PCBList[enteredPID].length]; i++) {
-                        _CPU.cycle();
-                    }
+                    //var interrupt = new RobOS.Interrupt(3, readyPCBQueue[0]);
+                    //_KernelInterruptQueue.enqueue(interrupt);
+                    _CPU.cycle();
                 }else {
                     _StdOut.putText("Please enter a valid PID number.");
                 }

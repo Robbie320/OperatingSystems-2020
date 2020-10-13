@@ -9,67 +9,31 @@ var RobOS;
         constructor() { }
         readOneByteDecimal(section, PC) {
             var hexString = "";
-            if (section == 1) {
-                hexString = _Memory.sectOneArr[PC];
-            }
-            else if (section == 2) {
-                hexString = _Memory.sectTwoArr[PC];
-            }
-            else if (section == 3) {
-                hexString = _Memory.sectThreeArr[PC];
-            }
+            var decimalInt = 0;
+            hexString = _Memory.memoryArr[_Memory.getSectMin(section) + PC];
             //Hex String to Decimal int
-            var decimalInt = parseInt(hexString, 16);
+            decimalInt = parseInt(hexString, 16);
             return decimalInt;
         }
         readTwoBytesDecimal(section, PC) {
             var hexString = "";
-            var decimalInt = parseInt(hexString, 16);
-            if (section == 1) {
-                hexString = _Memory.sectOneArr[PC + 1];
-                hexString += _Memory.sectOneArr[PC];
-                if (decimalInt > _Memory.sectOneArr.length) {
-                    console.log("Memory overflow.");
-                    throw (Error);
-                }
-                else {
-                    return decimalInt;
-                }
+            var decimalInt = 0;
+            var len;
+            hexString = _Memory.memoryArr[_Memory.getSectMin(section) + PC + 1];
+            hexString += _Memory.memoryArr[_Memory.getSectMin(section) + PC];
+            decimalInt = parseInt(hexString, 16) + _Memory.getSectMin(section);
+            len = _Memory.memoryArr.length;
+            if (decimalInt > len) {
+                console.log("Memory overflow.");
+                //throw(Error);
             }
-            else if (section == 2) {
-                hexString = _Memory.sectTwoArr[PC + 1];
-                hexString += _Memory.sectTwoArr[PC];
-                if (decimalInt > _Memory.sectTwoArr.length) {
-                    console.log("Memory overflow.");
-                    throw (Error);
-                }
-                else {
-                    return decimalInt;
-                }
-            }
-            else if (section == 3) {
-                hexString = _Memory.sectThreeArr[PC + 1];
-                hexString += _Memory.sectThreeArr[PC];
-                if (decimalInt > _Memory.sectThreeArr.length) {
-                    console.log("Memory overflow.");
-                    throw (Error);
-                }
-                else {
-                    return decimalInt;
-                }
+            else {
+                return decimalInt;
             }
         }
         readMemoryHex(section, PC) {
             var hexString = "";
-            if (section == 1) {
-                hexString = _Memory.sectOneArr[PC];
-            }
-            else if (section == 2) {
-                hexString = _Memory.sectTwoArr[PC];
-            }
-            else if (section == 3) {
-                hexString = _Memory.sectThreeArr[PC];
-            }
+            hexString = _Memory.memoryArr[_Memory.getSectMin(section) + PC];
             return hexString;
         }
     }

@@ -12,7 +12,7 @@
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
 const APP_NAME: string    = "RobOS";   // 'cause Bob and I were at a loss for a better name.
-const APP_VERSION: string = "Connery 0.5";   // What did you expect?
+const APP_VERSION: string = "Connery 2.7";   // What did you expect?
 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
@@ -73,7 +73,11 @@ var _PCB: RobOS.PCB;
 var PCBList = [];
 var currentPCB = null;
 var readyPCBQueue = [];
+var residentPCB = [];
 //var schedulingAlgorithm = "Round Robin";
+
+//Interrupts
+var SYSTEM_CALL = 3;
 
 //Hardware (host)
 var _CPU: RobOS.Cpu;
