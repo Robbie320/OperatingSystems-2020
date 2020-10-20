@@ -6,7 +6,7 @@ Memory.ts
 var RobOS;
 (function (RobOS) {
     class Memory {
-        constructor(memoryArr = new Array(256), sectOneMin = 0, sectOneMax = 255, sectTwoMin = 256, sectTwoMax = 511, sectThreeMin = 512, sectThreeMax = 767, sectOneAvailable = true, sectTwoAvailable = true, sectThreeAvailable = true) {
+        constructor(memoryArr = new Array(768), sectOneMin = 0, sectOneMax = 255, sectTwoMin = 256, sectTwoMax = 511, sectThreeMin = 512, sectThreeMax = 767, sectOneAvailable = true, sectTwoAvailable = true, sectThreeAvailable = true) {
             this.memoryArr = memoryArr;
             this.sectOneMin = sectOneMin;
             this.sectOneMax = sectOneMax;
@@ -18,7 +18,7 @@ var RobOS;
             this.sectTwoAvailable = sectTwoAvailable;
             this.sectThreeAvailable = sectThreeAvailable;
             //Total memory between 3 segments is 768
-            this.memoryArr = new Array(256);
+            this.memoryArr = new Array(767);
             this.sectOneMin = sectOneMin;
             this.sectOneMax = sectOneMax;
             this.sectTwoMin = sectTwoMin;
@@ -67,7 +67,7 @@ var RobOS;
                     return this.sectThreeMax;
                     break;
                 case "all":
-                    this.sectThreeMax;
+                    return this.sectThreeMax;
                     break;
                 default:
                     console.log(section);

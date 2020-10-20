@@ -31,6 +31,8 @@ var RobOS;
             this.krnTrace(_krnKeyboardDriver.status);
             //Initialize Memory Manager
             _MemoryManager = new RobOS.MemoryManager();
+            //Initialize Scheduler
+            _Scheduler = new RobOS.Scheduler();
             //
             // ... more?
             //
@@ -107,6 +109,14 @@ var RobOS;
                     _krnKeyboardDriver.isr(params); // Kernel mode device driver
                     _StdIn.handleInput();
                     break;
+                case SYSTEM_CALL:
+                    _StdOut.putText(params[0]);
+                    break;
+                case CONTEXT_SWITCH:
+                    currentPCB = params[0];
+                    _Scheduler.setPointer(_SchedulingAlgorithm);
+                    _Scheduler.switchPCB();
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
@@ -152,6 +162,7 @@ var RobOS;
         krnTrapError(msg) {
             RobOS.Control.hostLog("OS ERROR - TRAP: " + msg);
             // TODO: Display error on console, perhaps in some sort of colored screen. (Maybe blue?)
+            _OsShell.shellBSOD;
             this.krnShutdown();
         }
     }

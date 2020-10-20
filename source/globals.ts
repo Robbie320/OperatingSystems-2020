@@ -12,13 +12,16 @@
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
 const APP_NAME: string    = "RobOS";   // 'cause Bob and I were at a loss for a better name.
-const APP_VERSION: string = "Connery 2.7";   // What did you expect?
+const APP_VERSION: string = "Connery 3.5";   // What did you expect?
 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
 const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
+//Interrupts
+var SYSTEM_CALL = 2;
+var CONTEXT_SWITCH = 3;
 
 var today = new Date();
 
@@ -74,18 +77,19 @@ var PCBList = [];
 var currentPCB = null;
 var readyPCBQueue = [];
 var residentPCB = [];
-//var schedulingAlgorithm = "Round Robin";
 
-//Interrupts
-var SYSTEM_CALL = 3;
-
+//Memory
 //Hardware (host)
-var _CPU: RobOS.Cpu;
 var _Memory: RobOS.Memory;
 var _MemoryAccessor: RobOS.MemoryAccessor;
 //Software (OS)
 var _MemoryManager: any = null;
 
+//Scheduler
+var _Scheduler: any = null;
+var _SchedulingAlgorithm = "Round Robin"; //Round Robin by Default
+var _Quantum = 6; //6 by default
+var _Pointer = 0;
 
 //Single Step
 var _SingleStep = false;

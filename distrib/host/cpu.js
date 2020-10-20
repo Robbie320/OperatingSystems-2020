@@ -88,6 +88,9 @@ var RobOS;
                     break;
                 case "00":
                     this.breakProcess();
+                    /*_MemoryManager.sectAvailable(currentPCB.section);
+                    currentPCB.state = "Terminated";
+                    readyPCBQueue.splice(readyPCBQueue.indexOf(currentPCB), 1);*/
                     break;
                 case "EC":
                     this.compareByteToXReg();
@@ -111,6 +114,8 @@ var RobOS;
             }
             //Increment Program Counter
             this.PC++;
+            //Increment the amount of cycles to know when quantum is hit in Round Robin 
+            //currentPCB.quantaCycles++;
             //update Instruction Register
             this.IR = _MemoryAccessor.readMemoryHex(currentPCB.section, this.PC);
             currentPCB.PC = this.PC;
@@ -175,13 +180,13 @@ var RobOS;
             _StdOut.putText("Process " + currentPCB.PID + " is complete.");
             _StdOut.advanceLine();
             _OsShell.putPrompt();
-            readyPCBQueue.splice(_MemoryManager.getIndex(readyPCBQueue, currentPCB.PID), 1);
-            PCBList.splice(_MemoryManager.getIndex(PCBList, currentPCB.PID), 1);
-            currentPCB = null;
             this.isExecuting = false;
             currentPCB.state = "Terminated";
+            _MemoryManager.clearMem(currentPCB.section);
+            readyPCBQueue.splice(_MemoryManager.getIndex(readyPCBQueue, currentPCB.PID), 1);
+            PCBList.splice(_MemoryManager.getIndex(PCBList, currentPCB.PID), 1);
             RobOS.Control.updateAllTables();
-            RobOS.Control.clearCPUTb();
+            currentPCB = null;
         }
         compareByteToXReg() {
             this.increasePC();
@@ -217,16 +222,16 @@ var RobOS;
             this.increasePC();
         }
         systemCall() {
-            var parameters = [];
+            var params = [];
             if (this.Xreg == 1) {
                 //Print Yreg
-                parameters[0] = this.Yreg.toString();
-                var interrupt = new RobOS.Interrupt(SYSTEM_CALL, parameters);
+                params[0] = this.Yreg.toString();
+                var interrupt = new RobOS.Interrupt(SYSTEM_CALL, params);
                 _KernelInterruptQueue.enqueue(interrupt); // 2 = system call irq
             }
             else if (this.Xreg == 2) {
                 //print string
-                var loc = this.Yreg; //location
+                var loc = this.Yreg + _Memory.getSectMin(currentPCB.section); //location
                 var output = "";
                 var byteStr;
                 var len = _Memory.memoryArr.length;
@@ -238,11 +243,13 @@ var RobOS;
                     else {
                         output += String.fromCharCode(parseInt(byteStr, 16));
                     }
-                    //_KernelInterruptQueue.enqueue(new RobOS.Interrupt(SYSTEM_CALL, [0])); // 3 = system call irq
                 }
+                params[0] = output;
+                var interrupt = new RobOS.Interrupt(SYSTEM_CALL, params);
+                _KernelInterruptQueue.enqueue(interrupt); // 2 = system call irq
             }
             else {
-                console.log("System call with Xreg != 1 or 2");
+                console.log("System call with Xreg != 1 and Xreg != 2");
             }
         }
     }

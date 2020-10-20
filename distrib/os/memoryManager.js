@@ -94,7 +94,23 @@ var RobOS;
                 }
             }
         }
-        sectionAvailable(section) {
+        checkPCBisResident(enteredPID) {
+            var PCB;
+            for (PCB of residentPCB) {
+                if (PCB.PID == enteredPID) {
+                    return true;
+                }
+            }
+        }
+        checkPCBinReadyQueue(enteredPID) {
+            var PCB;
+            for (PCB of readyPCBQueue) {
+                if (PCB.PID == enteredPID) {
+                    return true;
+                }
+            }
+        }
+        sectAvailable(section) {
             if (section == "0") {
                 _Memory.sectOneAvailable = true;
             }
@@ -105,7 +121,7 @@ var RobOS;
                 _Memory.sectThreeAvailable = true;
             }
         }
-        sectionUnavailable(section) {
+        sectUnavailable(section) {
             if (section == "0") {
                 _Memory.sectOneAvailable = false;
             }

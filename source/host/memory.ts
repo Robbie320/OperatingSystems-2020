@@ -7,7 +7,7 @@ module RobOS {
 
     export class Memory {
 
-        constructor (public memoryArr = new Array(256),
+        constructor (public memoryArr = new Array(768),
                      public sectOneMin = 0,
                      public sectOneMax = 255, 
                      public sectTwoMin = 256,
@@ -19,7 +19,7 @@ module RobOS {
                      public sectThreeAvailable = true) {
 
             //Total memory between 3 segments is 768
-            this.memoryArr = new Array(256);
+            this.memoryArr = new Array(767);
             this.sectOneMin = sectOneMin;
             this.sectOneMax = sectOneMax;
             this.sectTwoMin = sectTwoMin;
@@ -68,7 +68,7 @@ module RobOS {
                     return this.sectThreeMax;
                     break;
                 case "all":
-                    this.sectThreeMax;
+                    return this.sectThreeMax;
                     break;
                 default:
                     console.log(section);

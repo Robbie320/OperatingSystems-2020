@@ -127,15 +127,21 @@ var RobOS;
             var entered;
             var next;
             var nextNum;
-            for (var m = 0; m < 256; m++) {
+            var m = 0;
+            var len = _Memory.memoryArr.length;
+            this.clearMemoryTb();
+            for (m = 0; m < len; m++) {
                 entered = document.getElementById("memory" + m);
+                entered.innerHTML = _Memory.memoryArr[m];
                 //nextNum = (m + 1);
                 //next = document.getElementById("memory" + nextNum);
-                entered.innerHTML = _Memory.memoryArr[m];
-                if (currentPCB.IR != "00" && entered.innerHTML == currentPCB.IR && m == currentPCB.PC) {
+                if (currentPCB == null) {
+                    entered.style.backgroundColor = 'white';
+                }
+                else if (entered.innerHTML == currentPCB.IR && m == currentPCB.PC + _Memory.getSectMin(currentPCB.section)) {
                     entered.style.backgroundColor = '#6a9beb';
                 }
-                else if (m == (currentPCB.PC + 1)) {
+                else if (m == (currentPCB.PC + _Memory.getSectMin(currentPCB.section) + 1)) {
                     entered.style.backgroundColor = '#ed5353';
                 }
                 else {
@@ -144,9 +150,9 @@ var RobOS;
                 }
             }
         }
-        static clearMemoryTb(section) {
+        static clearMemoryTb() {
             var m = 0;
-            var len = 767;
+            var len = _Memory.memoryArr.length;
             for (m = 0; m < len; m++) {
                 var entered = document.getElementById("memory" + m);
                 entered.innerHTML = "00";
@@ -219,6 +225,9 @@ var RobOS;
             }
         }
         static updateAllTables() {
+            this.clearMemoryTb();
+            this.clearCPUTb();
+            this.clearProcessesTb();
             this.memoryTbUpdate();
             this.cpuTbUpdate();
             this.proccessesTbUpdate();

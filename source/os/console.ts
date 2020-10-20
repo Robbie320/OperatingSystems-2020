@@ -148,9 +148,7 @@ module RobOS {
         tabAutofill(cmd) {
             if(cmd.length == 0) { //check if buffer is empty
                 return;
-            }
-            
-            else {
+            } else {
                 var command = "";
                 var letter = 0;
                 if(cmd[0] == "h"){
@@ -193,6 +191,15 @@ module RobOS {
                             break;
                     }
                 } else if(cmd[0] == "s") {
+                    command = "shutdown";
+                        switch(cmd) {
+                            case "s":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }
                     if(cmd[1] == "h") {
                         command = "shutdown";
                         switch(cmd) {
@@ -233,7 +240,7 @@ module RobOS {
                                 this.putText(this.buffer);
                                 break;
                         }
-                    }else if(cmd[1] == "t") {
+                    } else if(cmd[1] == "t") {
                         command = "status";
                         switch(cmd) {
                             case "st":
@@ -262,7 +269,21 @@ module RobOS {
                                 break;
                         }
                     }
-                }else if(cmd[0] == "c") {
+                    /* CYCLE BETWEEN COMMANDS */
+                    if(cmd == "shutdown") {
+                        command = "status";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    } else if(cmd == "status") {
+                        command = "shutdown";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    }
+                } else if(cmd[0] == "c") {
                     command = "cls";
                     switch(cmd){
                         case "c":
@@ -271,14 +292,43 @@ module RobOS {
                             this.buffer = command;
                             this.putText(this.buffer);
                             break;
-                        case "cl":
-                            //delete letters in buffer already
-                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
-                            this.buffer = command;
-                            this.putText(this.buffer);
-                            break;
                     }
-                }else if(cmd[0] == "m") {
+                    if(cmd[1] == "l") {
+                        command = "cls";
+                        switch(cmd) {
+                            case "cl":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }
+                    }
+                    if(cmd[2] == "e") {
+                        switch(cmd) {
+                            case "cl":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }
+                    }
+                    /* CYCLE BETWEEN COMMANDS */
+                    if(cmd == "cls") {
+                        command = "clearmem";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    } else if(cmd == "clearmem") {
+                        command = "cls";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    }
+                } else if(cmd[0] == "m") {
                     command = "man";
                     switch(cmd) {
                         case "m":
@@ -294,7 +344,7 @@ module RobOS {
                             this.putText(this.buffer);
                             break;
                     }
-                }else if(cmd[0] == "t") {
+                } else if(cmd[0] == "t") {
                     command = "trace";
                     switch(cmd) {
                         case "t":
@@ -322,16 +372,19 @@ module RobOS {
                             this.putText(this.buffer);
                             break;
                     }
-                }else if(cmd[0] == "r") {
+                } else if(cmd[0] == "r") {
+                    command = "run";
+                    switch(cmd) {
+                        case "r":
+                            //delete letters in buffer already
+                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
                     if(cmd[1] == "o") {
                         command = "rot13";
                         switch(cmd) {
-                            case "r":
-                                //delete letters in buffer already
-                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
-                                this.buffer = command;
-                                this.putText(this.buffer);
-                                break;
                             case "ro":
                                 //delete letters in buffer already
                                 for(letter; letter <= cmd.length; letter++) {this.backspace();}
@@ -351,9 +404,8 @@ module RobOS {
                                 this.putText(this.buffer);
                                 break;
                         }
-                    }
-                    if(cmd[1] == "u") {
-                        command = "run"
+                    } else if(cmd[1] == "u") {
+                        command = "run";
                         switch(cmd) {
                             case "ru":
                                 //delete letters in buffer already
@@ -361,43 +413,105 @@ module RobOS {
                                 this.buffer = command;
                                 this.putText(this.buffer);
                                 break;
-                        }     
+                        }
                     }
-                }else if(cmd[0] == "p") {
-                    command = "prompt";
-                    switch(cmd) {
-                        case "p":
-                            //delete letters in buffer already
-                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
-                            this.buffer = command;
-                            this.putText(this.buffer);
-                            break;
-                        case "pr":
-                            //delete letters in buffer already
-                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
-                            this.buffer = command;
-                            this.putText(this.buffer);
-                            break;
-                        case "pro":
-                            //delete letters in buffer already
-                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
-                            this.buffer = command;
-                            this.putText(this.buffer);
-                            break;
-                        case "prom":
-                            //delete letters in buffer already
-                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
-                            this.buffer = command;
-                            this.putText(this.buffer);
-                            break;
-                        case "promp":
-                            //delete letters in buffer already
-                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
-                            this.buffer = command;
-                            this.putText(this.buffer);
-                            break;
+                    if(cmd[3] == "n") {
+                        command = "runall";
+                        switch(cmd) {
+                            case "run":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "runa":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "runal":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }
                     }
-                }else if(cmd[0] == "d") {
+                    /* CYCLE BETWEEN COMMANDS */
+                    if(cmd == "rot13") {
+                        command = "run";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    } else if(cmd == "run") {
+                        command = "runall";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    } else if(cmd == "runall") {
+                        command = "rot13";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    }
+                } else if(cmd[0] == "p") {
+                    command = "ps";
+                        switch(cmd) {
+                            case "p":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }
+                    if(cmd[1] == "r") {
+                        command = "prompt";
+                        switch(cmd) {
+                            case "pr":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "pro":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "prom":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "promp":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }
+                    }
+                    /* CYCLE BETWEEN COMMANDS */
+                    if(cmd == "ps") {
+                        command = "prompt";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    } else if(cmd == "prompt") {
+                        command = "ps";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    }
+                } else if(cmd[0] == "d") {
                     command = "date";
                     switch(cmd) {
                         case "d":
@@ -419,7 +533,7 @@ module RobOS {
                             this.putText(this.buffer);
                             break;
                     }
-                }else if(cmd[0] == "w") {
+                } else if(cmd[0] == "w") {
                     command = "whereami"
                     switch(cmd){
                         case "w":
@@ -465,7 +579,7 @@ module RobOS {
                             this.putText(this.buffer);
                             break;
                     }
-                }else if(cmd[0] == "l") {
+                } else if(cmd[0] == "l") {
                     command = "load";
                     switch(cmd) {
                         case "l":
@@ -487,7 +601,21 @@ module RobOS {
                             this.putText(this.buffer);
                             break;
                     }
-                }else if(cmd[0] == "b") {
+                    /* CYCLE BETWEEN COMMANDS */
+                    if(cmd == "load") {
+                        command = "loz";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    } else if(cmd == "loz") {
+                        command = "load";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    }
+                } else if(cmd[0] == "b") {
                     command = "bsod";
                     switch(cmd) {
                         case "b":
@@ -503,6 +631,99 @@ module RobOS {
                             this.putText(this.buffer);
                             break;
                         case "bso":
+                            //delete letters in buffer already
+                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                } else if(cmd[0] == "k") {
+                    command = "kill";
+                    switch(cmd) {
+                        case "k":
+                            //delete letters in buffer already
+                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "ki":
+                            //delete letters in buffer already
+                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "kil":
+                            //delete letters in buffer already
+                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                    }
+                    if(cmd[4] == "a"){
+                        command = "killall";
+                        switch(cmd) {
+                            case "killa":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                            case "killal":
+                                //delete letters in buffer already
+                                for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                                this.buffer = command;
+                                this.putText(this.buffer);
+                                break;
+                        }
+                    }
+                    /* CYCLE BETWEEN COMMANDS */
+                    if(cmd == "kill") {
+                        command = "killall";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    } else if(cmd == "killall") {
+                        command = "kill";
+                        //delete letters in buffer already
+                        for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                        this.buffer = command;
+                        this.putText(this.buffer);
+                    }
+                } else if(cmd[0] == "q") {
+                    command = "quantum";
+                    switch(cmd) {
+                        case "q":
+                            //delete letters in buffer already
+                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "qu":
+                            //delete letters in buffer already
+                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "qua":
+                            //delete letters in buffer already
+                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "quan":
+                            //delete letters in buffer already
+                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "quant":
+                            //delete letters in buffer already
+                            for(letter; letter <= cmd.length; letter++) {this.backspace();}
+                            this.buffer = command;
+                            this.putText(this.buffer);
+                            break;
+                        case "quantu":
                             //delete letters in buffer already
                             for(letter; letter <= cmd.length; letter++) {this.backspace();}
                             this.buffer = command;
