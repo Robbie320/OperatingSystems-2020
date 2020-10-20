@@ -6,28 +6,72 @@ Memory.ts
 var RobOS;
 (function (RobOS) {
     class Memory {
-        constructor(sectOneArr = new Array(256), sectOneAvailable = true, sectTwoArr = new Array(256), sectTwoAvailable = true, sectThreeArr = new Array(256), sectThreeAvailable = true) {
-            this.sectOneArr = sectOneArr;
+        constructor(memoryArr = new Array(768), sectOneMin = 0, sectOneMax = 255, sectTwoMin = 256, sectTwoMax = 511, sectThreeMin = 512, sectThreeMax = 767, sectOneAvailable = true, sectTwoAvailable = true, sectThreeAvailable = true) {
+            this.memoryArr = memoryArr;
+            this.sectOneMin = sectOneMin;
+            this.sectOneMax = sectOneMax;
+            this.sectTwoMin = sectTwoMin;
+            this.sectTwoMax = sectTwoMax;
+            this.sectThreeMin = sectThreeMin;
+            this.sectThreeMax = sectThreeMax;
             this.sectOneAvailable = sectOneAvailable;
-            this.sectTwoArr = sectTwoArr;
             this.sectTwoAvailable = sectTwoAvailable;
-            this.sectThreeArr = sectThreeArr;
             this.sectThreeAvailable = sectThreeAvailable;
             //Total memory between 3 segments is 768
-            this.sectOneArr = new Array(256);
+            this.memoryArr = new Array(767);
+            this.sectOneMin = sectOneMin;
+            this.sectOneMax = sectOneMax;
+            this.sectTwoMin = sectTwoMin;
+            this.sectTwoMax = sectTwoMax;
+            this.sectThreeMin = sectThreeMin;
+            this.sectThreeMax = sectThreeMax;
             this.sectOneAvailable = sectOneAvailable;
-            this.sectTwoArr = new Array(256);
             this.sectTwoAvailable = sectTwoAvailable;
-            this.sectThreeArr = new Array(256);
             this.sectThreeAvailable = sectThreeAvailable;
             this.init();
         }
         init() {
             //set all memory to "00"
-            for (var i = 0; i < 256; i++) {
-                this.sectOneArr[i] = "00";
-                this.sectTwoArr[i] = "00";
-                this.sectThreeArr[i] = "00";
+            for (var i = 0; i < this.memoryArr.length; i++) {
+                this.memoryArr[i] = "00";
+            }
+        }
+        getSectMin(section) {
+            switch (section) {
+                case "1":
+                    return this.sectOneMin;
+                    break;
+                case "2":
+                    return this.sectTwoMin;
+                    break;
+                case "3":
+                    return this.sectThreeMin;
+                    break;
+                case "all":
+                    return this.sectOneMin;
+                    break;
+                default:
+                    console.log(section);
+                    console.log("Invalid section number.");
+            }
+        }
+        getSectMax(section) {
+            switch (section) {
+                case "1":
+                    return this.sectOneMax;
+                    break;
+                case "2":
+                    return this.sectTwoMax;
+                    break;
+                case "3":
+                    return this.sectThreeMax;
+                    break;
+                case "all":
+                    return this.sectThreeMax;
+                    break;
+                default:
+                    console.log(section);
+                    console.log("Invalid section number.");
             }
         }
     }

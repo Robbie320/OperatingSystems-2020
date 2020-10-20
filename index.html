@@ -31,6 +31,7 @@
    <script type="text/javascript" src="distrib/os/kernel.js"></script>
    <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
    <script type="text/javascript" src="distrib/os/PCB.js"></script>
+   <script type="text/javascript" src="distrib/os/scheduler.js"></script>
 
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
@@ -45,7 +46,7 @@
 
    <div id="divButtonBar" style="margin:4px;">
       <input type="button"
-             id = "btnStartOS"
+             id = "btnStartOS"o
              name="brnStartOS"
              class="start_button"
              value="Start"
@@ -150,8 +151,7 @@
                      id  ="taProgramInput"
                      rows="5"
                      cols="48"
-         >A9 03 8D 41 00 A9 01 8D 40 00 AC 40 00 A2 01 FF EE 40 00 AE 40 00 EC 41 00 D0 EF A9 44 8D 42 00 A9 4F 8D 43 00 A9 4E 8D 44 00 A9 45 8D 45 00 A9 00 8D 46 00 A2 02 A0 42 FF 00
-      </textarea>
+         >A9 03 8D 41 00 A9 01 8D 40 00 AC 40 00 A2 01 FF EE 40 00 AE 40 00 EC 41 00 D0 EF A9 44 8D 42 00 A9 4F 8D 43 00 A9 4E 8D 44 00 A9 45 8D 45 00 A9 00 8D 46 00 A2 02 A0 42 FF 00</textarea>
       </label>
    </div>
 
@@ -1260,15 +1260,15 @@
             <th>Location</th>
          </tr>
          <tr>
-            <td id="processesPID">0</td>
-            <td id="processesPC">0</td>
-            <td id="processesIR">0</td>
-            <td id="processesACC">0</td>
-            <td id="processesX">0</td>
-            <td id="processesY">0</td>
-            <td id="processesZ">0</td>
-            <td id="processesState">0</td>
-            <td id="processesLocation">0</td>
+            <td id="processPID">0</td>
+            <td id="processPC">0</td>
+            <td id="processIR">0</td>
+            <td id="processACC">0</td>
+            <td id="processX">0</td>
+            <td id="processY">0</td>
+            <td id="processZ">0</td>
+            <td id="processState">0</td>
+            <td id="processLocation">0</td>
          </tr>
       </table>
    </div>

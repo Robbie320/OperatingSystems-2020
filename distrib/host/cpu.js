@@ -87,8 +87,10 @@ var RobOS;
                 case "EA":
                     break;
                 case "00":
-                    //isCompleted = true;
-                    this.isExecuting = false;
+                    this.breakProcess();
+                    /*_MemoryManager.sectAvailable(currentPCB.section);
+                    currentPCB.state = "Terminated";
+                    readyPCBQueue.splice(readyPCBQueue.indexOf(currentPCB), 1);*/
                     break;
                 case "EC":
                     this.compareByteToXReg();
@@ -104,14 +106,18 @@ var RobOS;
                     break;
                 default:
                     _Kernel.krnTrapError("Instruction Not Valid:" + currentPCB.IR);
-                    //terminate
+                    currentPCB.state = "Terminated";
                     this.isExecuting = false;
+            }
+            if (_SingleStep == true) {
+                this.isExecuting = false;
             }
             //Increment Program Counter
             this.PC++;
-            this.IR = _MemoryAccessor.readMemoryHex(currentPCB.section, this.PC);
+            //Increment the amount of cycles to know when quantum is hit in Round Robin 
+            //currentPCB.quantaCycles++;
             //update Instruction Register
-            //this.IR = memoryAccessor
+            this.IR = _MemoryAccessor.readMemoryHex(currentPCB.section, this.PC);
             currentPCB.PC = this.PC;
             currentPCB.IR = this.IR;
             currentPCB.ACC = this.ACC;
@@ -132,110 +138,65 @@ var RobOS;
         }
         loadACCFromMemory() {
             this.increasePC();
-            if (currentPCB.section == 1) {
-                this.ACC = parseInt(_Memory.sectOneArr[_MemoryAccessor.readTwoBytesDecimal(1, this.PC)], 16);
-            }
-            else if (currentPCB.section == 2) {
-                this.ACC = parseInt(_Memory.sectTwoArr[_MemoryAccessor.readTwoBytesDecimal(2, this.PC)], 16);
-            }
-            else if (currentPCB.section == 3) {
-                this.ACC = parseInt(_Memory.sectThreeArr[_MemoryAccessor.readTwoBytesDecimal(1, this.PC)], 16);
-            }
+            this.ACC = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)], 16);
             //increase bc reading two bytes
             this.increasePC();
         }
         storeACCInMemory() {
             this.increasePC();
-            if (currentPCB.section == 1) {
-                _Memory.sectOneArr[_MemoryAccessor.readTwoBytesDecimal(1, this.PC)] = this.ACC.toString(16);
-            }
-            else if (currentPCB.section == 2) {
-                _Memory.sectTwoArr[_MemoryAccessor.readTwoBytesDecimal(2, this.PC)] = this.ACC.toString(16);
-            }
-            else if (currentPCB.section == 3) {
-                _Memory.sectThreeArr[_MemoryAccessor.readTwoBytesDecimal(1, this.PC)] = this.ACC.toString(16);
-            }
+            _Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)] = this.ACC.toString(16);
             //increase bc reading two bytes
             this.increasePC();
         }
         addWithCarry() {
             this.increasePC();
-            if (currentPCB.section == 1) {
-                this.ACC += parseInt(_Memory.sectOneArr[_MemoryAccessor.readTwoBytesDecimal(1, this.PC)], 16);
-            }
-            else if (currentPCB.section == 2) {
-                this.ACC += parseInt(_Memory.sectTwoArr[_MemoryAccessor.readTwoBytesDecimal(2, this.PC)], 16);
-            }
-            else if (currentPCB.section == 3) {
-                this.ACC += parseInt(_Memory.sectThreeArr[_MemoryAccessor.readTwoBytesDecimal(1, this.PC)], 16);
-            }
+            this.ACC += parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)], 16);
             //increase bc reading two bytes
             this.increasePC();
         }
         loadXRegWithConstant() {
             this.increasePC();
-            if (currentPCB.section == 1) {
-                this.Xreg = _MemoryAccessor.readOneByteDecimal(1, this.PC);
-            }
-            else if (currentPCB.section == 2) {
-                this.Xreg = _MemoryAccessor.readOneByteDecimal(2, this.PC);
-            }
-            else if (currentPCB.section == 3) {
-                this.Xreg = _MemoryAccessor.readOneByteDecimal(3, this.PC);
-            }
+            this.Xreg = _MemoryAccessor.readOneByteDecimal(currentPCB.section, this.PC);
         }
         loadXRegFromMemory() {
             this.increasePC();
-            if (currentPCB.section == 1) {
-                this.Xreg = _MemoryAccessor.readTwoBytesDecimal(1, this.PC);
-            }
-            else if (currentPCB.section == 2) {
-                this.Xreg = _MemoryAccessor.readTwoBytesDecimal(2, this.PC);
-            }
-            else if (currentPCB.section == 3) {
-                this.Xreg = _MemoryAccessor.readTwoBytesDecimal(3, this.PC);
-            }
+            this.Xreg = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)]);
             this.increasePC();
         }
         loadYRegWithConstant() {
             this.increasePC();
-            if (currentPCB.section == 1) {
-                this.Yreg = _MemoryAccessor.readOneByteDecimal(1, this.PC);
-            }
-            else if (currentPCB.section == 2) {
-                this.Yreg = _MemoryAccessor.readOneByteDecimal(2, this.PC);
-            }
-            else if (currentPCB.section == 3) {
-                this.Yreg = _MemoryAccessor.readOneByteDecimal(3, this.PC);
-            }
+            this.Yreg = _MemoryAccessor.readOneByteDecimal(currentPCB.section, this.PC);
         }
         loadYRegFromMemory() {
             this.increasePC();
-            if (currentPCB.section == 1) {
-                this.Yreg = _MemoryAccessor.readTwoBytesDecimal(1, this.PC);
-            }
-            else if (currentPCB.section == 2) {
-                this.Yreg = _MemoryAccessor.readTwoBytesDecimal(2, this.PC);
-            }
-            else if (currentPCB.section == 3) {
-                this.Yreg = _MemoryAccessor.readTwoBytesDecimal(3, this.PC);
-            }
+            this.Yreg = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)]);
             this.increasePC();
         }
         noOperation() {
             this.increasePC;
         }
+        breakProcess() {
+            _StdOut.advanceLine();
+            _StdOut.putText("Process " + currentPCB.PID + " is complete.");
+            _StdOut.advanceLine();
+            _OsShell.putPrompt();
+            this.isExecuting = false;
+            currentPCB.state = "Terminated";
+            _MemoryManager.clearMem(currentPCB.section);
+            readyPCBQueue.splice(_MemoryManager.getIndex(readyPCBQueue, currentPCB.PID), 1);
+            PCBList.splice(_MemoryManager.getIndex(PCBList, currentPCB.PID), 1);
+            RobOS.Control.updateAllTables();
+            currentPCB = null;
+        }
         compareByteToXReg() {
             this.increasePC();
             var memoryByte;
-            if (currentPCB.section == 1) {
-                memoryByte = parseInt(_Memory.sectOneArr[_MemoryAccessor.readTwoBytesDecimal(1, this.PC)], 16);
+            memoryByte = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)], 16);
+            if (memoryByte == this.Xreg) {
+                this.Zflag = 1;
             }
-            else if (currentPCB.section == 2) {
-                memoryByte = parseInt(_Memory.sectTwoArr[_MemoryAccessor.readTwoBytesDecimal(2, this.PC)], 16);
-            }
-            else if (currentPCB.section == 3) {
-                memoryByte = parseInt(_Memory.sectThreeArr[_MemoryAccessor.readTwoBytesDecimal(3, this.PC)], 16);
+            else {
+                this.Zflag = 0;
             }
             this.increasePC();
         }
@@ -243,16 +204,8 @@ var RobOS;
             this.increasePC();
             var bytes;
             if (this.Zflag == 0) {
-                if (currentPCB.section == 1) {
-                    bytes = _MemoryAccessor.readTwoBytesDecimal(1, this.PC);
-                }
-                else if (currentPCB.section == 2) {
-                    bytes = _MemoryAccessor.readTwoBytesDecimal(2, this.PC);
-                }
-                else if (currentPCB.section == 3) {
-                    bytes = _MemoryAccessor.readTwoBytesDecimal(3, this.PC);
-                }
-                if ((bytes + this.PC) > 256) {
+                bytes = _MemoryAccessor.readOneByteDecimal(currentPCB.section, this.PC);
+                if (bytes + this.PC > 256) {
                     this.PC = (this.PC + bytes) % 256;
                 }
                 else {
@@ -262,56 +215,41 @@ var RobOS;
         }
         incrementByteValue() {
             this.increasePC();
-            if (currentPCB.section == 1) {
-                //Parse to int and increment
-                _Memory.sectOneArr[_MemoryAccessor.readTwoBytesDecimal(1, this.PC)] = parseInt(_Memory.sectOneArr[_MemoryAccessor.readTwoBytesDecimal(1, this.PC)], 16) + 1;
-                //change incremented hex to string hex
-                _Memory.sectOneArr[_MemoryAccessor.readTwoBytesDecimal(1, this.PC)] = _Memory.sectOneArr[_MemoryAccessor.readTwoBytesDecimal(1, this.PC)].toString(16);
-            }
-            else if (currentPCB.section == 2) {
-                _Memory.sectTwoArr[_MemoryAccessor.readTwoBytesDecimal(2, this.PC)] = parseInt(_Memory.sectTwoArr[_MemoryAccessor.readTwoBytesDecimal(2, this.PC)], 16) + 1;
-                _Memory.sectTwoArr[_MemoryAccessor.readTwoBytesDecimal(2, this.PC)] = _Memory.sectTwoArr[_MemoryAccessor.readTwoBytesDecimal(2, this.PC)].toString(16);
-            }
-            else if (currentPCB.section == 3) {
-                _Memory.sectThreeArr[_MemoryAccessor.readTwoBytesDecimal(3, this.PC)] = parseInt(_Memory.sectThreeArr[_MemoryAccessor.readTwoBytesDecimal(3, this.PC)], 16) + 1;
-                _Memory.sectThreeArr[_MemoryAccessor.readTwoBytesDecimal(3, this.PC)] = _Memory.sectThreeArr[_MemoryAccessor.readTwoBytesDecimal(3, this.PC)].toString(16);
-            }
+            //Parse to int and increment hex
+            _Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)] = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)], 16) + 1;
+            //change incremented hex to string hex
+            _Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)] = _Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)].toString(16);
             this.increasePC();
         }
         systemCall() {
-            var paramaters = [];
+            var params = [];
             if (this.Xreg == 1) {
                 //Print Yreg
-                paramaters[0] = this.Yreg.toString();
-                _KernelInterruptQueue.enqueue(new RobOS.Interrupt(2, paramaters)); // 2 = system call irq
+                params[0] = this.Yreg.toString();
+                var interrupt = new RobOS.Interrupt(SYSTEM_CALL, params);
+                _KernelInterruptQueue.enqueue(interrupt); // 2 = system call irq
             }
             else if (this.Xreg == 2) {
                 //print string
-                var loc = this.Yreg; //location
+                var loc = this.Yreg + _Memory.getSectMin(currentPCB.section); //location
                 var output = "";
                 var byteStr;
-                //var size = _Memory.sectOneArr.length + _Memory.sectTwoArr.length + _Memory.sectThreeArr.length;
-                for (var i = 0; i + loc < 256; i++) {
-                    if (currentPCB.section == 1) {
-                        byteStr = _Memory.sectOneArr[loc + i];
-                    }
-                    else if (currentPCB.section == 2) {
-                        byteStr = _Memory.sectTwoArr[loc + i];
-                    }
-                    else if (currentPCB.section == 3) {
-                        byteStr = _Memory.sectThreeArr[loc + i];
-                    }
+                var len = _Memory.memoryArr.length;
+                for (var i = 0; i + loc < len; i++) {
+                    byteStr = _Memory.memoryArr[loc + i];
                     if (byteStr == "00") {
                         break;
                     }
                     else {
                         output += String.fromCharCode(parseInt(byteStr, 16));
                     }
-                    paramaters[0] = output;
-                    _KernelInterruptQueue.enqueue(new RobOS.Interrupt(2, paramaters)); // 2 = system call irq
                 }
+                params[0] = output;
+                var interrupt = new RobOS.Interrupt(SYSTEM_CALL, params);
+                _KernelInterruptQueue.enqueue(interrupt); // 2 = system call irq
             }
             else {
+                console.log("System call with Xreg != 1 and Xreg != 2");
             }
         }
     }

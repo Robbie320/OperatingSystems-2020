@@ -46,28 +46,44 @@ var RobOS;
             sc = new RobOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
             // date
-            sc = new RobOS.ShellCommand(this.shellDate, "date", " - Displays the current date and time.");
+            sc = new RobOS.ShellCommand(this.shellDate, "date", "- Displays the current date and time.");
             this.commandList[this.commandList.length] = sc;
             // whereami
-            sc = new RobOS.ShellCommand(this.shellWhereami, "whereami", " - Tells you where you are on Earth.");
+            sc = new RobOS.ShellCommand(this.shellWhereami, "whereami", "- Tells you where you are on Earth.");
             this.commandList[this.commandList.length] = sc;
             // loz
-            sc = new RobOS.ShellCommand(this.shellLoz, "loz", " - Displays triforce text art... for now.");
+            sc = new RobOS.ShellCommand(this.shellLoz, "loz", "- Displays triforce text art...");
             this.commandList[this.commandList.length] = sc;
             // status
             sc = new RobOS.ShellCommand(this.shellStatus, "status", "<string> - Sets your preferred status.");
             this.commandList[this.commandList.length] = sc;
             // bsod
-            sc = new RobOS.ShellCommand(this.shellBSOD, "bsod", " - Displays a BSOD message.");
+            sc = new RobOS.ShellCommand(this.shellBSOD, "bsod", "- Displays a BSOD message.");
             this.commandList[this.commandList.length] = sc;
             // load
-            sc = new RobOS.ShellCommand(this.shellLoad, "load", " - Load to validate the user code in the HTML5 text area.");
+            sc = new RobOS.ShellCommand(this.shellLoad, "load", "- Load UPI into memory for execution.");
             this.commandList[this.commandList.length] = sc;
             // run
-            sc = new RobOS.ShellCommand(this.shellRun, "run", "<pid> - Runs a program that's already loaded into memory.");
+            sc = new RobOS.ShellCommand(this.shellRun, "run", "<pid> - Runs a program already loaded in memory.");
+            this.commandList[this.commandList.length] = sc;
+            // runall
+            sc = new RobOS.ShellCommand(this.shellRunAll, "runall", "- Execute all programs at once.");
+            this.commandList[this.commandList.length] = sc;
+            // clearmem
+            sc = new RobOS.ShellCommand(this.shellClearMem, "clearmem", "- Clear all memory partitions.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
+            sc = new RobOS.ShellCommand(this.shellPS, "ps", "- Display the PID and state of all processes.");
+            this.commandList[this.commandList.length] = sc;
             // kill <id> - kills the specified process id.
+            sc = new RobOS.ShellCommand(this.shellKill, "kill", "<pid> - Kill one process.");
+            this.commandList[this.commandList.length] = sc;
+            // killall
+            sc = new RobOS.ShellCommand(this.shellKillAll, "killall", "- Kill all processes.");
+            this.commandList[this.commandList.length] = sc;
+            // quantum
+            sc = new RobOS.ShellCommand(this.shellQuantum, "quantum", "<int> - Sets the RR (Round Robin) quantum.");
+            this.commandList[this.commandList.length] = sc;
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -235,42 +251,12 @@ var RobOS;
                     case "prompt":
                         _StdOut.putText("Sets the prompt.");
                         break;
+                    // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     case "date":
                         _StdOut.putText("Tells date and time.  Or look at your watch.");
                         break;
                     case "whereami":
                         _StdOut.putText("If you don't know where you are, I definitely don't");
-                        break;
-                    case "loz":
-                        _StdOut.putText("The Legend of Zelda ... ya know, the game series?");
-                        break;
-                    // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
-                    case "ver":
-                        _StdOut.putText("The current version of RobOS.");
-                        break;
-                    case "shutdown":
-                        _StdOut.putText("Shuts down RobOS, but leaves the underlying host / hardware simulation running.");
-                        break;
-                    case "cls":
-                        _StdOut.putText("Clears the entire screen.  Resets cursor to the left side of the screen.");
-                        break;
-                    case "man":
-                        _StdOut.putText(" The manual. That thing you're reading. duh.");
-                        break;
-                    case "trace":
-                        _StdOut.putText("Turns the OS trace on or off.");
-                        break;
-                    case "rot13":
-                        _StdOut.putText("Does rot13 obfuscation on <string>.");
-                        break;
-                    case "prompt":
-                        _StdOut.putText("Sets the prompt.");
-                        break;
-                    case "date":
-                        _StdOut.putText("Tells date and time.  Or look at your watch.");
-                        break;
-                    case "whereami":
-                        _StdOut.putText("If you don't know where you are, I definitely don't.");
                         break;
                     case "loz":
                         _StdOut.putText("The Legend of Zelda ... ya know, the game series?");
@@ -282,10 +268,28 @@ var RobOS;
                         _StdOut.putText("Test BSOD message.");
                         break;
                     case "load":
-                        _StdOut.putText("Validate the user code in the HTML5 text area.");
+                        _StdOut.putText("Load the UPI (User Program Input) into memory for execution.");
                         break;
                     case "run":
                         _StdOut.putText("Runs a program that's already loaded into memory.");
+                        break;
+                    case "runall":
+                        _StdOut.putText("Execute all programs at once.");
+                        break;
+                    case "clearmem":
+                        _StdOut.putText("Clear all memory partitions.");
+                        break;
+                    case "ps":
+                        _StdOut.putText("Display the PID and state of all processes.");
+                        break;
+                    case "kill":
+                        _StdOut.putText("Kill a specified process in memory.");
+                        break;
+                    case "killall":
+                        _StdOut.putText("Kill all processes in memory.");
+                        break;
+                    case "quantum":
+                        _StdOut.putText("Lets the user set the RR (Round Robin) quantum (measured in cpu cycles).");
                         break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -427,11 +431,13 @@ var RobOS;
                 if (_MemoryManager.checkMemoryAvailability()) {
                     var pcb = new RobOS.PCB();
                     pcb.PID = _PID;
-                    currentPCB = pcb.PID;
+                    //currentPCB = pcb;
                     pcb.location = "Memory";
+                    pcb.state = "Waiting";
                     //Assign to memory section
                     pcb.section = _MemoryManager.assignMemory();
                     PCBList[PCBList.length] = pcb;
+                    residentPCB[residentPCB.length] = pcb;
                     //Load Memory
                     _MemoryManager.loadMemory(OPCodeArr, pcb.section, pcb.PID);
                     //Update PCB's IR
@@ -443,7 +449,7 @@ var RobOS;
                     //Program successfully loaded
                     _StdOut.putText("Program loaded.");
                     _StdOut.advanceLine();
-                    _StdOut.putText("PID: " + pcb.PID + ".");
+                    _StdOut.putText("PID: " + pcb.PID);
                     //_StdOut.putText(upi); //print user program input to debug/validate
                     //Increment PID
                     _PID++;
@@ -458,43 +464,13 @@ var RobOS;
             if (args.length > 0 && (!isNaN(Number(args[0])))) {
                 var enteredPID = Number(args[0]);
                 //check if PID is loaded in memory
-                var validPID = false;
-                for (var PCB of PCBList) {
-                    if (PCB.PID == enteredPID) {
-                        validPID = true;
-                    }
-                }
-                if (validPID == true) {
-                    _CPU.PC = currentPCB.PC;
-                    _CPU.IR = currentPCB.IR;
-                    _CPU.ACC = currentPCB.ACC;
-                    _CPU.Xreg = currentPCB.Xreg;
-                    _CPU.Yreg = currentPCB.Yreg;
-                    _CPU.section = currentPCB.section;
-                    _CPU.Zflag = currentPCB.Zflag;
-                    var index;
-                    for (index = 0; index < PCBList.length; index++) {
-                        if (PCBList[index].PID == enteredPID) {
-                            return index;
-                        }
-                    }
-                    PCBList[index].state = "Waiting";
-                    var PCB;
-                    for (PCB of PCBList) {
-                        if (PCB.PID == enteredPID) {
-                            return PCB;
-                        }
-                    }
-                    readyPCBQueue[readyPCBQueue.length] = PCB;
-                    //initalize CPU
-                    currentPCB = null;
+                if (_MemoryManager.checkPCBisResident(enteredPID)) {
+                    PCBList[_MemoryManager.getIndex(PCBList, enteredPID)].state = "Ready";
+                    RobOS.Control.proccessesTbUpdate();
+                    readyPCBQueue[readyPCBQueue.length] = _MemoryManager.getPCB(enteredPID);
+                    currentPCB = _MemoryManager.getPCB(enteredPID);
                     _CPU.isExecuting = true;
-                    var interrupt = new RobOS.Interrupt(4, PCBList[0]);
-                    _KernelInterruptQueue.enqueue(interrupt);
-                    _CPU.init();
-                    for (var i = 0; i < PCBList[PCBList[enteredPID].length]; i++) {
-                        _CPU.cycle();
-                    }
+                    _CPU.cycle();
                 }
                 else {
                     _StdOut.putText("Please enter a valid PID number.");
@@ -502,6 +478,125 @@ var RobOS;
             }
             else {
                 _StdOut.putText("Please put a number for the PID.");
+            }
+        }
+        shellRunAll(args) {
+            if (residentPCB.length == 0) {
+                _StdOut.putText("There are no processes in memory to run.");
+                return;
+            }
+            else {
+                if (residentPCB.length == 0 && readyPCBQueue.length > 0) {
+                    _StdOut.putText("Processes are already running.");
+                    return;
+                }
+                for (var i = 0; i < residentPCB.length; i++) {
+                    var temp = residentPCB[i];
+                    if (temp.state == "Waiting") {
+                        temp.state = "Ready";
+                        readyPCBQueue[readyPCBQueue.length] = temp;
+                        residentPCB.splice(i, 1);
+                    }
+                }
+                if (!_CPU.isExecuting) {
+                    _CPU.init();
+                    currentPCB = residentPCB[0];
+                    //_CPU.isExecuting = true;
+                }
+                _Scheduler.roundRobin();
+            }
+        }
+        shellClearMem(args) {
+            if (!_CPU.isExecuting) {
+                //Clear PCB list and queue, then clear memory which updates tables
+                PCBList = [];
+                readyPCBQueue = [];
+                residentPCB = [];
+                var section = "all";
+                _MemoryManager.clearMem(section);
+                RobOS.Control.memoryTbUpdate();
+            }
+            else {
+                _StdOut.putText("HALT: Memory can only be cleared when there are no programs being executed.");
+            }
+        }
+        shellPS(args) {
+            if (PCBList.length > 0) {
+                for (var i = 0; i < PCBList.length; i++) {
+                    _StdOut.putText("PID: " + PCBList[i].PID + " | State: " + PCBList[i].state);
+                    _StdOut.advanceLine();
+                }
+            }
+            else {
+                _StdOut.putText("There are currently no processes in memory.");
+            }
+        }
+        shellKill(args) {
+            if (args.length > 0 && (!isNaN(Number(args[0])))) {
+                var enteredPID = Number(args[0]);
+                //Check if PCB is resident
+                if (_MemoryManager.checkPCBisResident(enteredPID)) {
+                    _StdOut.putText("Process " + enteredPID + ": Terminated");
+                    //if current PCB is not null and PID is equal to the entered PID
+                    if (currentPCB != null && currentPCB.PID == enteredPID) {
+                        currentPCB = null; //set currentPCB to null
+                    }
+                    //Get PCB section by enteredPID and clear section
+                    var section = _MemoryManager.getPCB(enteredPID).section;
+                    _MemoryManager.clearMem(section);
+                    //Get index in the PCBList by enteredPID and remove that section from PCBList
+                    var indexPCBList = _MemoryManager.getIndex(PCBList, enteredPID);
+                    PCBList.splice(indexPCBList, 1);
+                    //Get index in the residentPCB list
+                    var indexResidentPCB = _MemoryManager.getIndex(residentPCB, enteredPID);
+                    residentPCB.splice(indexResidentPCB, 1);
+                    //check if PCB is in the ready queue and remove it from the readyPCBQueue
+                    if (_MemoryManager.checkPCBinReadyQueue(enteredPID)) {
+                        var indexPCBReadyQueue = _MemoryManager.getIndex(readyPCBQueue, enteredPID);
+                        readyPCBQueue.splice(indexPCBReadyQueue, 1);
+                    }
+                    //Update Tables
+                    RobOS.Control.updateAllTables();
+                }
+                else {
+                    _StdOut.putText("Please enter a valid PID number that is in memory.");
+                }
+            }
+            else {
+                _StdOut.putText("Please enter a PID number.");
+            }
+        }
+        shellKillAll(args) {
+            //Stop CPU
+            _CPU.isExecuting = false;
+            //Let user know which processes are being terminated
+            for (var i = 0; i < PCBList.length; i++) {
+                _StdOut.putText("Process " + PCBList[i].PID + ": Terminated");
+                _StdOut.advanceLine();
+            }
+            //clear all memory partitions/sections and update tables
+            _MemoryManager.clearMem("all");
+            //Clear all lists
+            PCBList = [];
+            readyPCBQueue = [];
+            residentPCB = [];
+            //set currentPCB to null
+            currentPCB = null;
+            RobOS.Control.updateAllTables();
+        }
+        shellQuantum(args) {
+            //Check if quantum is valid
+            if (args.length > 0 && !(isNaN(Number(args[0])))) {
+                var enteredQuantum = Number(args[0]);
+                if (enteredQuantum > 0) {
+                    _Quantum = enteredQuantum;
+                }
+                else {
+                    _StdOut.putText("Please enter a quantum greater than 0.");
+                }
+            }
+            else {
+                _StdOut.putText("Please enter a valid quantum.");
             }
         }
     }

@@ -111,6 +111,7 @@ var RobOS;
             //turn single step off
             _SingleStep = false;
             btn.disabled = true;
+            _CPU.isExecuting = true;
             //enable Single Step On button
             document.getElementById("btnSingleStepOn").disabled = false;
             //disable Next Step button
@@ -120,25 +121,39 @@ var RobOS;
         static hostBtnNextStep_click(btn) {
             //Go to next step by turning to true
             _NextStep = true;
+            _CPU.isExecuting = true;
         }
         static memoryTbUpdate() {
+            var entered;
+            var next;
+            var nextNum;
+            var m = 0;
+            var len = _Memory.memoryArr.length;
             this.clearMemoryTb();
-            for (var m = 0; m < 256; m++) {
-                var entered = document.getElementById("memory" + m);
-                /*if(currentPCB.section = "1") {*/
-                entered.innerHTML = _Memory.sectOneArr[m];
-                /*} else if(currentPCB.section = "2") {
-                    entered.innerHTML = _Memory.sectOneArr[m];
-                } else if(currentPCB.section = "3") {
-                    entered.innerHTML = _Memory.sectOneArr[m];
-                }*/
-                if (entered.innerHTML == "") {
-                    entered.innerHTML = "00";
+            for (m = 0; m < len; m++) {
+                entered = document.getElementById("memory" + m);
+                entered.innerHTML = _Memory.memoryArr[m];
+                //nextNum = (m + 1);
+                //next = document.getElementById("memory" + nextNum);
+                if (currentPCB == null) {
+                    entered.style.backgroundColor = 'white';
+                }
+                else if (entered.innerHTML == currentPCB.IR && m == currentPCB.PC + _Memory.getSectMin(currentPCB.section)) {
+                    entered.style.backgroundColor = '#6a9beb';
+                }
+                else if (m == (currentPCB.PC + _Memory.getSectMin(currentPCB.section) + 1)) {
+                    entered.style.backgroundColor = '#ed5353';
+                }
+                else {
+                    entered.style.backgroundColor = 'white';
+                    //next.style.backgroundColor = 'white';
                 }
             }
         }
         static clearMemoryTb() {
-            for (var m = 0; m < 768; m++) {
+            var m = 0;
+            var len = _Memory.memoryArr.length;
+            for (m = 0; m < len; m++) {
                 var entered = document.getElementById("memory" + m);
                 entered.innerHTML = "00";
             }
@@ -146,10 +161,9 @@ var RobOS;
         static cpuTbUpdate() {
             if (_CPU.isExecuting) {
                 var cpuPC = document.getElementById("cpuPC");
-                cpuPC.innerHTML = _CPU.PC.toString(16).toUpperCase();
+                cpuPC.innerHTML = _CPU.PC.toString();
                 var cpuIR = document.getElementById("cpuIR");
-                cpuIR.innerHTML = _CPU.IR.toString().toUpperCase();
-                ;
+                cpuIR.innerHTML = _CPU.IR;
                 var cpuACC = document.getElementById("cpuACC");
                 cpuACC.innerHTML = _CPU.ACC.toString(16).toUpperCase();
                 var cpuX = document.getElementById("cpuX");
@@ -178,52 +192,45 @@ var RobOS;
             cpuZ.innerHTML = "0";
         }
         static proccessesTbUpdate() {
-            this.clearprocessesTb();
+            this.clearProcessesTb();
+            var tbProcesses = document.getElementById("tbProcesses");
             for (var p = 0; p < PCBList.length; p++) {
-                var processesPID = document.getElementById("processesPID");
-                processesPID.innerHTML = PCBList[p].PID.toString(16).toUpperCase();
-                var processesPC = document.getElementById("processesPC");
-                processesPC.innerHTML = PCBList[p].PC.toString(16).toUpperCase();
-                var processesIR = document.getElementById("processesIR");
-                processesIR.innerHTML = PCBList[p].IR.toString(16).toUpperCase();
-                var processesACC = document.getElementById("processesACC");
+                //insert row for each process
+                var row = tbProcesses.insertRow(p + 1);
+                var processesPID = row.insertCell(0);
+                processesPID.innerHTML = PCBList[p].PID.toString();
+                var processesPC = row.insertCell(1);
+                processesPC.innerHTML = PCBList[p].PC.toString();
+                var processesIR = row.insertCell(2);
+                processesIR.innerHTML = PCBList[p].IR;
+                var processesACC = row.insertCell(3);
                 processesACC.innerHTML = PCBList[p].ACC.toString(16).toUpperCase();
-                var processesX = document.getElementById("processesX");
+                var processesX = row.insertCell(4);
                 processesX.innerHTML = PCBList[p].Xreg.toString(16).toUpperCase();
-                var processesY = document.getElementById("processesY");
+                var processesY = row.insertCell(5);
                 processesY.innerHTML = PCBList[p].Yreg.toString(16).toUpperCase();
-                var processesZ = document.getElementById("processesZ");
+                var processesZ = row.insertCell(6);
                 processesZ.innerHTML = PCBList[p].Zflag.toString(16).toUpperCase();
-                var processesState = document.getElementById("processesState");
+                var processesState = row.insertCell(7);
                 processesState.innerHTML = PCBList[p].state.toString(16).toUpperCase();
-                var processesLocation = document.getElementById("processesLocation");
+                var processesLocation = row.insertCell(8);
                 processesLocation.innerHTML = PCBList[p].location.toString(16).toUpperCase();
             }
         }
-        static clearprocessesTb() {
-            var processesPID = document.getElementById("processesPID");
-            processesPID.innerHTML = "0";
-            var processesPC = document.getElementById("processesPC");
-            processesPC.innerHTML = "0";
-            var processesIR = document.getElementById("processesIR");
-            processesIR.innerHTML = "0";
-            var processesACC = document.getElementById("processesACC");
-            processesACC.innerHTML = "0";
-            var processesX = document.getElementById("processesX");
-            processesX.innerHTML = "0";
-            var processesY = document.getElementById("processesY");
-            processesY.innerHTML = "0";
-            var processesZ = document.getElementById("processesZ");
-            processesZ.innerHTML = "0";
-            var processesState = document.getElementById("processesState");
-            processesState.innerHTML = "0";
-            var processesLocation = document.getElementById("processesLocation");
-            processesLocation.innerHTML = "0";
+        static clearProcessesTb() {
+            var tbProcesses = document.getElementById("tbProcesses");
+            // delete each row
+            for (var i = tbProcesses.rows.length; i > 1; i--) {
+                tbProcesses.deleteRow(i - 1);
+            }
         }
         static updateAllTables() {
-            this.memoryTbUpdate;
-            this.cpuTbUpdate;
-            this.proccessesTbUpdate;
+            this.clearMemoryTb();
+            this.clearCPUTb();
+            this.clearProcessesTb();
+            this.memoryTbUpdate();
+            this.cpuTbUpdate();
+            this.proccessesTbUpdate();
         }
     }
     RobOS.Control = Control;

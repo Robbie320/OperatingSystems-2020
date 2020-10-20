@@ -15,7 +15,8 @@ module RobOS {
                      public Zflag: number = 0,
                      public state: string = "",
                      public location: string = "",
-                     public section: string = "") {
+                     public section: string = "",
+                     public quantaCycles: number = 0) {
 
             this.PID = PID;
             this.PC = PC;
@@ -27,6 +28,7 @@ module RobOS {
             this.state = state;
             this.location = location;
             this.section = section;
+            this.quantaCycles = quantaCycles;
         }
     }
 }
