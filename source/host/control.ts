@@ -158,7 +158,6 @@ module RobOS {
                 entered.innerHTML = _Memory.memoryArr[m];
                 //nextNum = (m + 1);
                 //next = document.getElementById("memory" + nextNum);
-                
                 if(currentPCB == null) {
                     entered.style.backgroundColor = 'white';
                 }
@@ -221,10 +220,10 @@ module RobOS {
                 var row = tbProcesses.insertRow(p + 1);
 
                 var processesPID = row.insertCell(0);
-                processesPID.innerHTML = PCBList[p].PID.toString();
+                processesPID.innerHTML = PCBList[p].PID.toString(16).toUpperCase();
 
                 var processesPC = row.insertCell(1);
-                processesPC.innerHTML = PCBList[p].PC.toString();
+                processesPC.innerHTML = PCBList[p].PC.toString(16).toUpperCase();
 
                 var processesIR = row.insertCell(2);
                 processesIR.innerHTML = PCBList[p].IR;
@@ -242,10 +241,10 @@ module RobOS {
                 processesZ.innerHTML = PCBList[p].Zflag.toString(16).toUpperCase();
                 
                 var processesState = row.insertCell(7);
-                processesState.innerHTML = PCBList[p].state.toString(16).toUpperCase();
+                processesState.innerHTML = PCBList[p].state;
                 
                 var processesLocation = row.insertCell(8);
-                processesLocation.innerHTML = PCBList[p].location.toString(16).toUpperCase();
+                processesLocation.innerHTML = PCBList[p].location;
             }
         }
         public static clearProcessesTb() {

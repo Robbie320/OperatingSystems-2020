@@ -20,8 +20,8 @@ const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (inte
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
 //Interrupts
-var SYSTEM_CALL = 2;
-var CONTEXT_SWITCH = 3;
+var SYSTEM_CALL: number = 2;
+var CONTEXT_SWITCH: number = 3;
 
 var today = new Date();
 
@@ -87,7 +87,7 @@ var _MemoryManager: any = null;
 
 //Scheduler
 var _Scheduler: any = null;
-var _SchedulingAlgorithm = "Round Robin"; //Round Robin by Default
+var _SchedulingAlgorithm = "ROUND ROBIN"; //Round Robin by Default
 var _Quantum = 6; //6 by default
 var _Pointer = 0;
 

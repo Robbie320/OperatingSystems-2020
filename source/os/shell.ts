@@ -470,8 +470,10 @@ module RobOS {
             var upi = _UserCodeTextArea.value;
             //Split at Space into array
             upi = upi.toUpperCase();
+            
             var hexChrArr = upi.split('');
             var OPCodeArr = upi.split(' ');
+            
             upi = upi.replace(/\s/g, '');
 
             //Checks for only hex characters
@@ -536,12 +538,12 @@ module RobOS {
                 
                 if(_MemoryManager.checkPCBisResident(enteredPID)){
                     PCBList[_MemoryManager.getIndex(PCBList, enteredPID)].state = "Ready";
-                    RobOS.Control.proccessesTbUpdate();
+                    //RobOS.Control.proccessesTbUpdate();
 
                     readyPCBQueue[readyPCBQueue.length] = _MemoryManager.getPCB(enteredPID);
                     currentPCB = _MemoryManager.getPCB(enteredPID);
                     _CPU.isExecuting = true;
-                    _CPU.cycle();
+                    RobOS.Control.updateAllTables();
                 }else {
                     _StdOut.putText("Please enter a valid PID number.");
                 }
@@ -553,26 +555,25 @@ module RobOS {
             if(residentPCB.length == 0) {
                 _StdOut.putText("There are no processes in memory to run.");
                 return;
-            }
-            else {
-                if(residentPCB.length == 0 && readyPCBQueue.length > 0) {
-                    _StdOut.putText("Processes are already running.");
-                    return;
-                }
-                for(var i = 0; i < residentPCB.length; i++) {
-                    var temp = residentPCB[i];
-                    if(temp.state == "Waiting") {
-                        temp.state = "Ready";
-                        readyPCBQueue[readyPCBQueue.length] = temp;
+            } else {
+                //Turn all processes from waiting to ready
+               for(var i = 0; i < residentPCB.length; i+=0) {
+                    if(residentPCB[i].state == "Waiting") {
+                        residentPCB[i].state = "Ready";
+                        readyPCBQueue[readyPCBQueue.length] = residentPCB[i];
                         residentPCB.splice(i, 1);
                     }
                 }
                 if(!_CPU.isExecuting) {
                     _CPU.init();
-                    currentPCB = residentPCB[0];
-                    //_CPU.isExecuting = true;
+                    currentPCB = readyPCBQueue[0];
+                    if(_SingleStep == true) {
+                        _CPU.isExecuting = false;
+                    } else{
+                        _CPU.isExecuting = true;
+                    }
+                    RobOS.Control.updateAllTables();
                 }
-                _Scheduler.roundRobin();
             }
         }
         public shellClearMem(args: String[]) {
