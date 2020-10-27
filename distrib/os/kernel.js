@@ -54,6 +54,8 @@ var RobOS;
             // ... Disable the Interrupts.
             this.krnTrace("Disabling the interrupts.");
             this.krnDisableInterrupts();
+            this.krnTrace("CPU is no longer executing.");
+            _CPU.isExecuting = false;
             //
             // Unload the Device Drivers?
             // More?
@@ -75,6 +77,8 @@ var RobOS;
             }
             else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
                 _CPU.cycle();
+                RobOS.Control.updateAllTables();
+                _Scheduler.roundRobin();
             }
             else { // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");
@@ -113,9 +117,10 @@ var RobOS;
                     _StdOut.putText(params[0]);
                     break;
                 case CONTEXT_SWITCH:
-                    currentPCB = params[0];
                     _Scheduler.setPointer(_SchedulingAlgorithm);
                     _Scheduler.switchPCB();
+                    RobOS.Control.proccessesTbUpdate();
+                    //currentPCB = params[0];
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");

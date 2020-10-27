@@ -96,7 +96,7 @@ var RobOS;
                     this.compareByteToXReg();
                     break;
                 case "D0":
-                    this.branchBytes();
+                    this.branch();
                     break;
                 case "EE":
                     this.incrementByteValue();
@@ -108,9 +108,6 @@ var RobOS;
                     _Kernel.krnTrapError("Instruction Not Valid:" + currentPCB.IR);
                     currentPCB.state = "Terminated";
                     this.isExecuting = false;
-            }
-            if (_SingleStep == true) {
-                this.isExecuting = false;
             }
             //Increment Program Counter
             this.PC++;
@@ -126,8 +123,11 @@ var RobOS;
             currentPCB.Zflag = this.Zflag;
             //update tables (GUI) again
             RobOS.Control.updateAllTables();
-            //Break out of process
+            if (_SingleStep == true) {
+                this.isExecuting = false;
+            }
         }
+        //Execute
         //OP CODE FUNCTIONS//
         increasePC() {
             this.PC++;
@@ -160,7 +160,7 @@ var RobOS;
         }
         loadXRegFromMemory() {
             this.increasePC();
-            this.Xreg = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)]);
+            this.Xreg = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)], 16);
             this.increasePC();
         }
         loadYRegWithConstant() {
@@ -169,24 +169,25 @@ var RobOS;
         }
         loadYRegFromMemory() {
             this.increasePC();
-            this.Yreg = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)]);
+            this.Yreg = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)], 16);
             this.increasePC();
         }
         noOperation() {
-            this.increasePC;
+            this.increasePC();
         }
         breakProcess() {
             _StdOut.advanceLine();
             _StdOut.putText("Process " + currentPCB.PID + " is complete.");
             _StdOut.advanceLine();
             _OsShell.putPrompt();
-            this.isExecuting = false;
+            //this.isExecuting = false;
             currentPCB.state = "Terminated";
             _MemoryManager.clearMem(currentPCB.section);
             readyPCBQueue.splice(_MemoryManager.getIndex(readyPCBQueue, currentPCB.PID), 1);
             PCBList.splice(_MemoryManager.getIndex(PCBList, currentPCB.PID), 1);
             RobOS.Control.updateAllTables();
-            currentPCB = null;
+            //currentPCB = null;
+            _Scheduler.roundRobin();
         }
         compareByteToXReg() {
             this.increasePC();
@@ -200,16 +201,15 @@ var RobOS;
             }
             this.increasePC();
         }
-        branchBytes() {
+        branch() {
             this.increasePC();
             var bytes;
             if (this.Zflag == 0) {
                 bytes = _MemoryAccessor.readOneByteDecimal(currentPCB.section, this.PC);
-                if (bytes + this.PC > 256) {
-                    this.PC = (this.PC + bytes) % 256;
-                }
-                else {
-                    this.PC += bytes;
+                this.PC += bytes;
+                var segmentSize = 256;
+                if (this.PC > segmentSize) {
+                    this.PC %= segmentSize;
                 }
             }
         }

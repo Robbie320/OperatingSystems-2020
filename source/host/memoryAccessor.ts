@@ -23,10 +23,9 @@ module RobOS {
             hexString = _Memory.memoryArr[_Memory.getSectMin(section) + PC + 1];
             hexString += _Memory.memoryArr[_Memory.getSectMin(section) + PC];
             decimalInt = parseInt(hexString, 16) + _Memory.getSectMin(section);
-            len = _Memory.memoryArr.length;
+            len = _Memory.getSectMax(section);
             if(decimalInt > len) {
                 console.log("Memory overflow.");
-                //throw(Error);
             } else {
                 return decimalInt;
             }

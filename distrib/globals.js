@@ -69,7 +69,7 @@ var _MemoryAccessor;
 var _MemoryManager = null;
 //Scheduler
 var _Scheduler = null;
-var _SchedulingAlgorithm = "Round Robin"; //Round Robin by Default
+var _SchedulingAlgorithm = "ROUND ROBIN"; //Round Robin by Default
 var _Quantum = 6; //6 by default
 var _Pointer = 0;
 //Single Step

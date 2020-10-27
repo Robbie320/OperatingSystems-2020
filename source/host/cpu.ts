@@ -52,6 +52,7 @@ module RobOS {
             
             currentPCB.state = "Running";
             //Fetch Instructions//
+            
             //update CPU with PCB values
             this.PC = currentPCB.PC;
             this.IR = currentPCB.IR;
@@ -64,7 +65,6 @@ module RobOS {
             //Update GUI from control.ts
             RobOS.Control.updateAllTables();
             
-
             //Decode and Execute Instructions//
             switch(currentPCB.IR) {
                 case "A9":
@@ -103,7 +103,7 @@ module RobOS {
                     this.compareByteToXReg();
                     break;
                 case "D0":
-                    this.branchBytes();
+                    this.branch();
                     break;
                 case "EE":
                     this.incrementByteValue();
@@ -116,11 +116,9 @@ module RobOS {
                     currentPCB.state = "Terminated"
                     this.isExecuting = false;
             }
-            if(_SingleStep == true) {
-                this.isExecuting = false;
-            }
+
             //Increment Program Counter
-            this.PC++;
+            this.increasePC();
             //Increment the amount of cycles to know when quantum is hit in Round Robin 
             //currentPCB.quantaCycles++;
             //update Instruction Register
@@ -132,11 +130,16 @@ module RobOS {
             currentPCB.Xreg = this.Xreg;
             currentPCB.Yreg = this.Yreg;
             currentPCB.Zflag = this.Zflag;
-            
+
             //update tables (GUI) again
             RobOS.Control.updateAllTables();
-            //Break out of process
+
+            if(_SingleStep == true) {
+                this.isExecuting = false;
+            }
         }
+
+        //Execute
         //OP CODE FUNCTIONS//
         increasePC() {
             this.PC++;
@@ -169,7 +172,7 @@ module RobOS {
         }
         loadXRegFromMemory() {
             this.increasePC();
-            this.Xreg = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)]);
+            this.Xreg = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)], 16);
             this.increasePC();
         }
         loadYRegWithConstant() {
@@ -178,11 +181,11 @@ module RobOS {
         }
         loadYRegFromMemory() {
             this.increasePC();
-            this.Yreg = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)]);
+            this.Yreg = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)], 16);
             this.increasePC();
         }
         noOperation() {
-            this.increasePC;
+            this.increasePC();
         }
         breakProcess() {
             _StdOut.advanceLine();
@@ -190,7 +193,7 @@ module RobOS {
             _StdOut.advanceLine();
             _OsShell.putPrompt();
 
-            this.isExecuting = false;
+            //this.isExecuting = false;
             currentPCB.state = "Terminated";
             
             _MemoryManager.clearMem(currentPCB.section);
@@ -198,7 +201,8 @@ module RobOS {
             PCBList.splice(_MemoryManager.getIndex(PCBList, currentPCB.PID), 1);
             
             RobOS.Control.updateAllTables();
-            currentPCB = null;
+            //currentPCB = null;
+            _Scheduler.roundRobin();
         }
         compareByteToXReg() {
             this.increasePC();
@@ -212,15 +216,15 @@ module RobOS {
             }
             this.increasePC();
         }
-        branchBytes() {
+        branch() {
             this.increasePC();
             var bytes;
             if(this.Zflag == 0) {
                 bytes = _MemoryAccessor.readOneByteDecimal(currentPCB.section, this.PC);
-                if(bytes + this.PC > 256) {
-                    this.PC = (this.PC + bytes) % 256;
-                } else {
-                    this.PC += bytes;
+                this.PC += bytes;
+                var segmentSize = 256;
+                if(this.PC > segmentSize) {
+                    this.PC %= segmentSize;
                 }
             }
         }
@@ -230,7 +234,6 @@ module RobOS {
             _Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)] = parseInt(_Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)], 16) + 1;
             //change incremented hex to string hex
             _Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)] = _Memory.memoryArr[_MemoryAccessor.readTwoBytesDecimal(currentPCB.section, this.PC)].toString(16);
-            
             this.increasePC();
         }
         systemCall() {
@@ -256,8 +259,8 @@ module RobOS {
                     }
                 }
                 params[0] = output;
-                    var interrupt = new RobOS.Interrupt(SYSTEM_CALL, params);
-                    _KernelInterruptQueue.enqueue(interrupt); // 2 = system call irq
+                var interrupt = new RobOS.Interrupt(SYSTEM_CALL, params);
+                _KernelInterruptQueue.enqueue(interrupt); // 2 = system call irq
             }
             else {
                 console.log("System call with Xreg != 1 and Xreg != 2")
