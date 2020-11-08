@@ -18,7 +18,7 @@ var RobOS;
             this.sectTwoAvailable = sectTwoAvailable;
             this.sectThreeAvailable = sectThreeAvailable;
             //Total memory between 3 segments is 768
-            this.memoryArr = new Array(767);
+            this.memoryArr = memoryArr;
             this.sectOneMin = sectOneMin;
             this.sectOneMax = sectOneMax;
             this.sectTwoMin = sectTwoMin;

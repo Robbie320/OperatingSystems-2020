@@ -94,7 +94,7 @@ module RobOS {
             _Memory = new Memory();
             _Memory.init();
             _MemoryAccessor = new MemoryAccessor();
-
+            _Disk = new Disk();
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.
@@ -254,13 +254,82 @@ module RobOS {
                 tbProcesses.deleteRow(i - 1);
             }
         }
+        public static diskTbUpdate() {
+            //First clear the table
+            this.clearDiskTb();
+            //Load the table
+            var diskTb: HTMLTableElement = <HTMLTableElement> document.getElementById("tbDisk");
+            //Store the data in an Array
+            var dataArr;
+
+            //INITALIZE HEADER ROW//
+            var headerRow = diskTb.insertRow(0);
+            headerRow.style.fontWeight = "bold";
+            //CELLS//
+            //TSB
+            var tsb = headerRow.insertCell(0);
+            tsb.innerHTML = "T:S:B";
+            //Used
+            var used = headerRow.insertCell(1);
+            used.innerHTML = "Used";
+            //Next
+            var next = headerRow.insertCell(2);
+            next.innerHTML = "Next";
+            //Data
+            var data = headerRow.insertCell(3);
+            data.innerHTML = "Data";
+            
+            //DATA ROWS//
+            //Rows starting at 1
+            var rowNum = 1;
+            //Track, Sector, Block for loops to set up using the HTML5 Session Storage
+            for(var x = 0; x < _Disk.tracks; x++) { //tracks loop
+                for(var y = 0; y < _Disk.sectors; y++) { //sectors loop
+                    for(var z = 0; z < _Disk.blocks; z++) { //blocks loop
+                        dataArr = sessionStorage.getItem(x + ":" + y + ":" + z).split(",");
+                        //INITALIZE DATA ROW//
+                        var dataRow = diskTb.insertRow(rowNum);
+                        //CELLS//
+                        //TSB
+                        var tsb = dataRow.insertCell(0);
+                        tsb.innerHTML = x + ":" + y + ":" + z;
+                        //Used
+                        var used = dataRow.insertCell(1);
+                        used.innerHTML = dataArr[0].valueOf();
+                        //Next
+                        var next = dataRow.insertCell(2);
+                        next.innerHTML = dataArr[1] + ":" + dataArr[2] + ":" + dataArr[3];
+                        //Data
+                        var data = dataRow.insertCell(3);
+                        var dataStr = new String();
+                        for(var j = 4; j < dataArr.length; j++) {
+                            dataStr += dataArr[j].valueOf();
+                        }
+                        data.innerHTML = dataStr.valueOf();
+
+                        rowNum++; //increment to the next row number
+                    }
+                }
+            }
+        }
+        public static clearDiskTb() {
+            var diskTb: HTMLTableElement = <HTMLTableElement> document.getElementById("tbDisk");
+            //delete the rows
+            for(var i = 1; i < diskTb.rows.length;) {
+                diskTb.deleteRow(i);
+            }
+        }
         public static updateAllTables() {
             this.clearMemoryTb();
             this.clearCPUTb();
             this.clearProcessesTb();
+            this.clearDiskTb();
             this.memoryTbUpdate();
             this.cpuTbUpdate();
             this.proccessesTbUpdate();
+            if(_DiskFormatted) {
+                this.diskTbUpdate();
+            }
         }
     }
 }

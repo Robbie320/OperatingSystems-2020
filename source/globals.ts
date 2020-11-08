@@ -61,7 +61,7 @@ var _OsShell: RobOS.Shell;
 var _SarcasticMode: boolean = false;
 
 // Global Device Driver Objects - page 12
-var _krnKeyboardDriver: RobOS.DeviceDriverKeyboard  = null;
+var _krnKeyboardDriver: RobOS.DeviceDriverKeyboard = null;
 
 var _hardwareClockID: number = null;
 
@@ -82,7 +82,7 @@ var residentPCB = [];
 //Hardware (host)
 var _Memory: RobOS.Memory;
 var _MemoryAccessor: RobOS.MemoryAccessor;
-//Software (OS)
+//Software (os)
 var _MemoryManager: any = null;
 
 //Scheduler
@@ -90,6 +90,11 @@ var _Scheduler: any = null;
 var _SchedulingAlgorithm = "ROUND ROBIN"; //Round Robin by Default
 var _Quantum = 6; //6 by default
 var _Pointer = 0;
+
+//Disk
+var _Disk: RobOS.Disk;
+var _krnDiskDriver: RobOS.DeviceDriverDisk = null;
+var _DiskFormatted = false; //default to false
 
 //Single Step
 var _SingleStep = false;

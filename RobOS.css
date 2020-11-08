@@ -52,11 +52,16 @@ table, tr, th, td {
   cursor: default;
 }
 
+#divDisk2, #taHostLog, #taProgramInput {
+  border: 1px solid black;
+  /*background-color: white;*/
+}
+
 #tbMemory, #tbCPU, #tbProcesses {
   background-color: transparent;
 }
 
-#divMemory2 {
+#divMemory2, #divDisk2 {
   border-style: outset;
 }
 

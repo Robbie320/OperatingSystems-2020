@@ -29,6 +29,11 @@ var RobOS;
             _krnKeyboardDriver = new RobOS.DeviceDriverKeyboard(); // Construct it.
             _krnKeyboardDriver.driverEntry(); // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
+            //Load the Disk Device Driver
+            this.krnTrace("Loading the disk device driver.");
+            _krnDiskDriver = new RobOS.DeviceDriverDisk(); // Construct it.
+            _krnDiskDriver.driverEntry(); // Call the driverEntry() initialization routine.
+            this.krnTrace(_krnDiskDriver.status);
             //Initialize Memory Manager
             _MemoryManager = new RobOS.MemoryManager();
             //Initialize Scheduler
@@ -76,9 +81,11 @@ var RobOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             }
             else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
-                _CPU.cycle();
-                RobOS.Control.updateAllTables();
-                _Scheduler.roundRobin();
+                if (!_SingleStep) {
+                    _CPU.cycle();
+                    RobOS.Control.updateAllTables();
+                    _Scheduler.roundRobin();
+                }
             }
             else { // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");
@@ -117,7 +124,9 @@ var RobOS;
                     _StdOut.putText(params[0]);
                     break;
                 case CONTEXT_SWITCH:
+                    //set to next PCB
                     _Scheduler.setPointer(_SchedulingAlgorithm);
+                    //Switch PCBs
                     _Scheduler.switchPCB();
                     RobOS.Control.proccessesTbUpdate();
                     //currentPCB = params[0];

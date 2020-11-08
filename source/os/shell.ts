@@ -127,13 +127,13 @@ module RobOS {
                 "- Clear all memory partitions.");
                  this.commandList[this.commandList.length] = sc;
            
-            // ps  - list the running processes and their IDs
+            // ps
             sc = new ShellCommand(this.shellPS,
                 "ps",
                 "- Display the PID and state of all processes.");
             this.commandList[this.commandList.length] = sc;
             
-            // kill <id> - kills the specified process id.
+            // kill <id>
             sc = new ShellCommand(this.shellKill,
                 "kill",
                 "<pid> - Kill one process.");
@@ -145,10 +145,58 @@ module RobOS {
                 "- Kill all processes.");
             this.commandList[this.commandList.length] = sc;
             
-            // quantum
+            // quantum <int>
             sc = new ShellCommand(this.shellQuantum,
                 "quantum",
                 "<int> - Sets the RR (Round Robin) quantum.");
+            this.commandList[this.commandList.length] = sc;
+            
+            // create <filename>
+            sc = new ShellCommand(this.shellCreate,
+                "create",
+                "<filename> - Create a new file.");
+            this.commandList[this.commandList.length] = sc;
+
+            // read <filename>
+            sc = new ShellCommand(this.shellRead,
+                "read",
+                "<filename> - Read and display the contents of a file.");
+            this.commandList[this.commandList.length] = sc;
+
+            // write <filename>
+            sc = new ShellCommand(this.shellWrite,
+                "write",
+                "<filename> - Write the data inside the quotes to the file.");
+            this.commandList[this.commandList.length] = sc;
+            
+            // delete <filename>
+            sc = new ShellCommand(this.shellDelete,
+                "delete",
+                "<filename> - Remove the file from storage.");
+            this.commandList[this.commandList.length] = sc;
+            
+            // format
+            sc = new ShellCommand(this.shellFormat,
+                "format",
+                "- Initalize all blocks in all sectors in all sectors in all tracks.");
+            this.commandList[this.commandList.length] = sc;
+
+            // ls
+            sc = new ShellCommand(this.shellLS,
+                "ls",
+                "- List the files currently stored on the disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            // setschedule
+            sc = new ShellCommand(this.shellSetSchedule,
+                "setschedule",
+                "- Set a specified CPU scheduling algorithm.");
+            this.commandList[this.commandList.length] = sc;
+           
+            // getschedule
+            sc = new ShellCommand(this.shellGetSchedule,
+                "getschedule",
+                "- Return the currently selected CPU scheduling algorithm.");
             this.commandList[this.commandList.length] = sc;
             
             // Display the initial prompt.
@@ -370,6 +418,30 @@ module RobOS {
                     case "quantum":
                         _StdOut.putText("Lets the user set the RR (Round Robin) quantum (measured in cpu cycles).");
                         break;
+                    case "create":
+                        _StdOut.putText("Create the file 'filename'.");
+                        break;
+                    case "read":
+                        _StdOut.putText("Read and display the contents of the file 'filename'.");
+                        break;
+                    case "write":
+                        _StdOut.putText("Write the data inside the quotes to the file 'filename'.");
+                        break;
+                    case "delete":
+                        _StdOut.putText("Remove the file 'filename' from storage.");
+                        break;
+                    case "format":
+                        _StdOut.putText("Initialize all blocks in all sectors in all tracks.");
+                        break;
+                    case "ls":
+                        _StdOut.putText("List the files currently stored on the disk.");
+                        break;
+                    case "setschedule":
+                        _StdOut.putText("Select a CPU scheduling algorithm [rr, fcfs, priority].");
+                        break;
+                    case "getschedule":
+                            _StdOut.putText("Return the currently selected CPU scheduling algorithm.");
+                            break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -661,6 +733,7 @@ module RobOS {
             if(args.length > 0 && !(isNaN(Number(args[0])))) {
                 var enteredQuantum = Number(args[0]);
                 if(enteredQuantum > 0) {
+                    //set quantum to the entered number
                     _Quantum = enteredQuantum;
                 } else {
                     _StdOut.putText("Please enter a quantum greater than 0.");
@@ -668,6 +741,78 @@ module RobOS {
             } else {
                 _StdOut.putText("Please enter a valid quantum.");
             }
+        }
+        public shellCreate(args: String[]) {
+            if(_DiskFormatted) { //Disk must be formatted to create a file
+                if(args[0].length == 1) { //No spaces allowed in Filenames
+                    if(args[0][0] != "~") { // "~" represents blank
+                        if(args.length < 60) {
+                            /*if(_krnDiskDriver.findFile()) {
+                                _StdOut.putText("Successfully created file: " + args[0]);
+                            } else {
+                                _StdOut.putText("File " + args[0] + " already exists.");
+                                _StdOut.putText("Please name your file something different.");
+                            }*/
+                        } else {
+                            _StdOut.putText("ERROR: Filename too large.");
+                            _StdOut.putText("Please enter a filename of 60 characters or less.");
+                        }
+                    } else {
+                        _StdOut.putText("ERROR: '~' is invalid character in a filename.");
+                    }
+                } else {
+                    _StdOut.putText("ERROR: Invalid filename.");
+                    _StdOut.putText("Please enter a valid filename.");
+                }
+            } else {
+                _StdOut.putText("The disk must be formatted before a file can be created.");
+            }
+        }
+        public shellRead(args: String[]) {
+            if(_DiskFormatted) { //Disk must be formatted to read a file
+                var filename = _krnDiskDriver;
+                if(args.length == 1) { //check for filename with no spaces
+                    
+                }
+            }
+        }
+        public shellWrite(args: String[]) {
+            
+        }
+        public shellDelete(args: String[]) {
+            
+        }
+        public shellFormat(args: String[]) {
+            if(_DiskFormatted) {
+                _StdOut.putText("The Disk has already been formatted. The Disk can only be formatted once.");
+            } else {
+                _krnDiskDriver.formatDisk();
+                _DiskFormatted = true;
+                _StdOut.putText("The Disk has been Formatted.");
+            }
+        }
+        public shellLS(args: String[]) {
+            
+        }
+        public shellSetSchedule(args: String[]) {
+            var setAlgorithm = args[0];
+            if(setAlgorithm == "rr" || setAlgorithm == "Red Robin" 
+            || setAlgorithm == "RED ROBIN" || setAlgorithm == "red robin") {
+                _SchedulingAlgorithm = "ROUND ROBIN";
+                _StdOut.putText("Scheduling Algorithm set to Round Robin.");
+            } else if (setAlgorithm == "fcfs" || setAlgorithm == "First Come First Serve" 
+            || setAlgorithm == "FIRST COME FIRST SERVE" || setAlgorithm == "first come first serve") {
+                _SchedulingAlgorithm = "FIRST COME FIRST SERVE";
+                _StdOut.putText("Scheduling Algorithm set to First Come First Serve.");
+            } else if (_SchedulingAlgorithm == "priority" || _SchedulingAlgorithm == "PRIORITY") {
+                _SchedulingAlgorithm = "PRIORITY";
+                _StdOut.putText("Scheduling Algorithm set to Priority.");
+            } else {
+                _StdOut.putText("Please enter a valid Scheduling Algorithm [rr, fcfs, priority]");
+            }
+        }
+        public shellGetSchedule(args: String[]) {
+            _StdOut.putText("The current Scheduling Algorithm is " + _SchedulingAlgorithm + ".");
         }
     }
 }

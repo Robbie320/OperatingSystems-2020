@@ -110,9 +110,7 @@ var RobOS;
                     this.isExecuting = false;
             }
             //Increment Program Counter
-            this.PC++;
-            //Increment the amount of cycles to know when quantum is hit in Round Robin 
-            //currentPCB.quantaCycles++;
+            this.increasePC();
             //update Instruction Register
             this.IR = _MemoryAccessor.readMemoryHex(currentPCB.section, this.PC);
             currentPCB.PC = this.PC;

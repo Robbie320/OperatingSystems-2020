@@ -17,6 +17,7 @@
    <script type="text/javascript" src="distrib/host/cpu.js"></script>
    <script type="text/javascript" src="distrib/host/memory.js"></script>
    <script type="text/javascript" src="distrib/host/memoryAccessor.js"></script>
+   <script type="text/javascript" src="distrib/host/disk.js"></script>
    
    <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
    <script type="text/javascript" src="distrib/os/interrupt.js"></script>
@@ -32,6 +33,7 @@
    <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
    <script type="text/javascript" src="distrib/os/PCB.js"></script>
    <script type="text/javascript" src="distrib/os/scheduler.js"></script>
+   <script type="text/javascript" src="distrib/os/deviceDriverDisk.js"></script>
 
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
@@ -136,9 +138,9 @@
          Host Log
          <br>
          <textarea name="taHostLog"
-                     id  ="taHostLog"
-                     rows="8"
-                     cols="48"
+                   id  ="taHostLog"
+                   rows="9"
+                   cols="48"
          ></textarea>
       </label>
    </div>
@@ -1260,18 +1262,30 @@
          </tr>
       </table>
    </div>
-</div>
+   
+   <br><br>
 
-<div id="divUserProgramInput" style="margin-left:520px;">
-   <label>
-      User Program Input
-      <br>
-      <textarea name="taProgramInput"
-                  id  ="taProgramInput"
-                  rows="5"
-                  cols="48"
-      >A9 03 8D 41 00 A9 01 8D 40 00 AC 40 00 A2 01 FF EE 40 00 AE 40 00 EC 41 00 D0 EF A9 44 8D 42 00 A9 4F 8D 43 00 A9 4E 8D 44 00 A9 45 8D 45 00 A9 00 8D 46 00 A2 02 A0 42 FF 00</textarea>
-   </label>
+   <div id="divDisk" style="margin-left:4px; float:left;">
+      <label>Disk</label>
+      <div id="divDisk2"
+           style="overflow-y:scroll; width:505px; height:135px;">
+         <table id="tbDisk">
+            <!-- Cells for Disk are added when the disk is formatted -->
+         </table>
+      </div>
+   </div>
+
+   <div id="divUserProgramInput" style="margin-left:520px;">
+      <label>
+         User Program Input
+         <br>
+         <textarea name="taProgramInput"
+                   id  ="taProgramInput"
+                   rows="9"
+                   cols="48"
+         >A9 03 8D 41 00 A9 01 8D 40 00 AC 40 00 A2 01 FF EE 40 00 AE 40 00 EC 41 00 D0 EF A9 44 8D 42 00 A9 4F 8D 43 00 A9 4E 8D 44 00 A9 45 8D 45 00 A9 00 8D 46 00 A2 02 A0 42 FF 00</textarea>
+      </label>
+   </div>
 </div>
 
 <p class="footerText" style="clear:both;">

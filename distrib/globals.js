@@ -65,13 +65,17 @@ var residentPCB = [];
 //Hardware (host)
 var _Memory;
 var _MemoryAccessor;
-//Software (OS)
+//Software (os)
 var _MemoryManager = null;
 //Scheduler
 var _Scheduler = null;
 var _SchedulingAlgorithm = "ROUND ROBIN"; //Round Robin by Default
 var _Quantum = 6; //6 by default
 var _Pointer = 0;
+//Disk
+var _Disk;
+var _krnDiskDriver = null;
+var _DiskFormatted = false; //default to false
 //Single Step
 var _SingleStep = false;
 var _NextStep = false;

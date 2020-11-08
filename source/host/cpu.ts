@@ -119,8 +119,6 @@ module RobOS {
 
             //Increment Program Counter
             this.increasePC();
-            //Increment the amount of cycles to know when quantum is hit in Round Robin 
-            //currentPCB.quantaCycles++;
             //update Instruction Register
             this.IR = _MemoryAccessor.readMemoryHex(currentPCB.section, this.PC);
             
