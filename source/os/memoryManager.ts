@@ -9,8 +9,12 @@ module RobOS {
         construtor() {}
 
         loadMemory(UPIArray, section, PID) {
-            for(var i = 0; i < UPIArray.length; i++) {
-                _Memory.memoryArr[_Memory.getSectMin(section) + i] = UPIArray[i];
+            if(section != "disk") {
+                for(var i = 0; i < UPIArray.length; i++) {
+                    _Memory.memoryArr[_Memory.getSectMin(section) + i] = UPIArray[i];
+                }
+            } else {
+                //_krnDiskDriver.createSwapFile();
             }
             //UPDATE TABLES
             RobOS.Control.updateAllTables();
@@ -126,6 +130,23 @@ module RobOS {
             } else if(section == "2") {
                 _Memory.sectThreeAvailable = false;
             }
+        }
+        checkProcessOnDisk() {
+            for(var d = 0; d < PCBList.length; d++) {
+                if(PCBList[d].location == "Disk") {
+                    return true;
+                }
+            }
+            return false;
+        }
+        rollInProcess(pid) {
+
+        }
+        rollOutProcess() {
+
+        } 
+        loadDiskProcess() {
+
         }
     }
 }

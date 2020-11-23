@@ -60,6 +60,9 @@ var _OsShell: RobOS.Shell;
 // At least this OS is not trying to kill you. (Yet.)
 var _SarcasticMode: boolean = false;
 
+//Dark Mode
+var _DarkMode: boolean = false;
+
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver: RobOS.DeviceDriverKeyboard = null;
 

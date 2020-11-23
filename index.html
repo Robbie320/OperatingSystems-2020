@@ -43,7 +43,6 @@
 </head>
 
 <body onload="onDocumentLoad()">
-
 <div id="divMain" style="width:100%;">
 
    <div id="divButtonBar" style="margin:4px;">
@@ -99,26 +98,36 @@
              value="Next Step"
              tabindex="5"
              onclick="RobOS.Control.hostBtnNextStep_click(this);">
+
+      <input type="button"
+             id = "btnDarkMode"
+             name="btnDarkMode"
+             class="darkMode_button"
+             disabled="disabled"
+             value="Dark Mode Toggle"
+             tabindex="5"
+             onclick="RobOS.Control.hostBtnDarkMode_click(this);">
+      
       <br>
       <!--Display Date and Live Time-->
       Date & Time: <span id="date"></span>
       <span id="time"></span>
 
       <script type = "text/javascript">
-      var today = new Date();
-      document.getElementById("date").innerHTML = today.toLocaleDateString();
-      
-      var clock = document.getElementById('time');
+         var today = new Date();
+         document.getElementById("date").innerHTML = today.toLocaleDateString();
+         
+         var clock = document.getElementById('time');
 
-      function time() {
-         var day = new Date();
-         var sec = day.getSeconds();
-         var min = day.getMinutes();
-         var hour = day.getHours();
-         clock.textContent = hour + ":" + min + ":" + sec;
-      }
-      setInterval(Date, 10);
-      setInterval(time, 10);
+         function time() {
+            var day = new Date();
+            var sec = day.getSeconds();
+            var min = day.getMinutes();
+            var hour = day.getHours();
+            clock.textContent = hour + ":" + min + ":" + sec;
+         }
+         setInterval(Date, 10);
+         setInterval(time, 10);
       </script>
       <br>
       <div id="statusIn">Status: </div>

@@ -76,6 +76,8 @@ module RobOS {
         //
         // Host Events
         //
+
+        //BUTTONS//
         public static hostBtnStartOS_click(btn): void {
             // Disable the (passed-in) start button...
             btn.disabled = true;
@@ -84,7 +86,7 @@ module RobOS {
             (<HTMLButtonElement>document.getElementById("btnHaltOS")).disabled = false;
             (<HTMLButtonElement>document.getElementById("btnReset")).disabled = false;
             (<HTMLButtonElement>document.getElementById("btnSingleStepOn")).disabled = false;
-
+            (<HTMLButtonElement>document.getElementById("btnDarkMode")).disabled = false;
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
 
@@ -101,7 +103,6 @@ module RobOS {
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.
         }
-
         public static hostBtnHaltOS_click(btn): void {
             Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
@@ -111,7 +112,6 @@ module RobOS {
             clearInterval(_hardwareClockID);
             // TODO: Is there anything else we need to do here?
         }
-
         public static hostBtnReset_click(btn): void {
             // The easiest and most thorough way to do this is to reload (not refresh) the document.
             location.reload(true);
@@ -140,12 +140,36 @@ module RobOS {
             //disable Next Step button
             (<HTMLButtonElement>document.getElementById("btnNextStep")).disabled = true;
         }
-        //UPDATE THE TABLES//
         public static hostBtnNextStep_click(btn): void {
             //Go to next step by turning to true
             _NextStep = true;
             _CPU.isExecuting = true;
         }
+        public static hostBtnDarkMode_click(btn): void {
+            var body = document.body;
+            var textarea = document.getElementById("taProgramInput");
+            var hostLog = document.getElementById("taHostLog");
+            //var tbCpu = document.getElementById("tbCpu");
+            //var tbProcesses = document.getElementById("tbProcesses");
+
+            body.classList.toggle("darkMode");
+            textarea.classList.toggle("darkMode");
+            hostLog.classList.toggle("darkMode");
+            //tbCpu.classList.toggle("darkMode");
+            //tbProcesses.classList.toggle("darkMode");
+
+            if(!_DarkMode) {
+                _StdOut.putText("Embrace the dark side...");
+                _DarkMode = !_DarkMode;
+            } else {
+                _StdOut.putText("It's dangerous to go alone, take this!.");
+                _DarkMode = !_DarkMode;
+            }
+            _StdOut.advanceLine();
+        }
+
+
+         //UPDATE THE TABLES//
         public static memoryTbUpdate() {
             var entered;
             var next;

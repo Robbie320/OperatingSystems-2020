@@ -502,6 +502,33 @@ var RobOS;
                     //Increment PID
                     _PID++;
                 }
+                else if (!_MemoryManager.checkMemoryAvailability() && _DiskFormatted) {
+                    _StdOut.putText("Memory full. Loading process to disk.");
+                    var pcb = new RobOS.PCB();
+                    pcb.PID = _PID;
+                    //currentPCB = pcb;
+                    pcb.location = "Disk";
+                    pcb.state = "Waiting";
+                    //Assign to memory section
+                    pcb.section = "disk";
+                    PCBList[PCBList.length] = pcb;
+                    residentPCB[residentPCB.length] = pcb;
+                    //Load Memory
+                    _MemoryManager.loadMemory(OPCodeArr, pcb.section, pcb.PID);
+                    //Update PCB's IR
+                    pcb.IR = upi[0] + upi[1] + " ";
+                    //Update the Memory Table
+                    RobOS.Control.memoryTbUpdate();
+                    //Update the Processes Table
+                    RobOS.Control.proccessesTbUpdate();
+                    //Program successfully loaded
+                    _StdOut.putText("Program loaded.");
+                    _StdOut.advanceLine();
+                    _StdOut.putText("PID: " + pcb.PID);
+                    //_StdOut.putText(upi); //print user program input to debug/validate
+                    //Increment PID
+                    _PID++;
+                }
                 else {
                     _StdOut.putText("Memory is full.");
                 }
@@ -581,14 +608,16 @@ var RobOS;
             }
         }
         shellKill(args) {
-            if (args.length > 0 && (!isNaN(Number(args[0])))) {
+            if (args.length == 1 && (!isNaN(Number(args[0])))) {
                 var enteredPID = Number(args[0]);
                 //Check if PCB is resident
-                if (_MemoryManager.checkPCBisResident(enteredPID)) {
+                if (_MemoryManager.checkPCBisResident(enteredPID) || _MemoryManager.checkPCBinReadyQueue(enteredPID)) {
                     _StdOut.putText("Process " + enteredPID + ": Terminated");
                     //if current PCB is not null and PID is equal to the entered PID
                     if (currentPCB != null && currentPCB.PID == enteredPID) {
                         currentPCB = null; //set currentPCB to null
+                    }
+                    if (_MemoryManager.getPCB(enteredPID).section == "disk") {
                     }
                     //Get PCB section by enteredPID and clear section
                     var section = _MemoryManager.getPCB(enteredPID).section;
@@ -597,8 +626,10 @@ var RobOS;
                     var indexPCBList = _MemoryManager.getIndex(PCBList, enteredPID);
                     PCBList.splice(indexPCBList, 1);
                     //Get index in the residentPCB list
-                    var indexResidentPCB = _MemoryManager.getIndex(residentPCB, enteredPID);
-                    residentPCB.splice(indexResidentPCB, 1);
+                    if (_MemoryManager.checkPCBisResident(enteredPID)) {
+                        var indexResidentPCB = _MemoryManager.getIndex(residentPCB, enteredPID);
+                        residentPCB.splice(indexResidentPCB, 1);
+                    }
                     //check if PCB is in the ready queue and remove it from the readyPCBQueue
                     if (_MemoryManager.checkPCBinReadyQueue(enteredPID)) {
                         var indexPCBReadyQueue = _MemoryManager.getIndex(readyPCBQueue, enteredPID);
@@ -606,6 +637,7 @@ var RobOS;
                     }
                     //Update Tables
                     RobOS.Control.updateAllTables();
+                    _Scheduler.schedule();
                 }
                 else {
                     _StdOut.putText("Please enter a valid PID number that is in memory.");
@@ -650,32 +682,41 @@ var RobOS;
             }
         }
         shellCreate(args) {
+            var filename = args[0];
             if (_DiskFormatted) { //Disk must be formatted to create a file
-                if (args[0].length == 1) { //No spaces allowed in Filenames
-                    if (args[0][0] != "~") {
-                        if (args.length < 60) {
-                            /*if(_krnDiskDriver.findFile()) {
-                                _StdOut.putText("Successfully created file: " + args[0]);
-                            } else {
-                                _StdOut.putText("File " + args[0] + " already exists.");
+                if (args.length == 1) { //No spaces allowed in Filenames
+                    if (filename[0] != "~") { // "~" represents blank
+                        if (filename.length < 60) {
+                            if (_krnDiskDriver.findFile(filename) == null) {
+                                _krnDiskDriver.createFile(filename);
+                                _StdOut.putText("Successfully created file: " + filename);
+                            }
+                            else {
+                                _StdOut.putText("File " + filename + " already exists.");
+                                _StdOut.advanceLine();
                                 _StdOut.putText("Please name your file something different.");
-                            }*/
+                            }
                         }
                         else {
                             _StdOut.putText("ERROR: Filename too large.");
+                            _StdOut.advanceLine();
                             _StdOut.putText("Please enter a filename of 60 characters or less.");
                         }
                     }
                     else {
                         _StdOut.putText("ERROR: '~' is invalid character in a filename.");
+                        _StdOut.advanceLine();
                     }
                 }
                 else {
                     _StdOut.putText("ERROR: Invalid filename.");
+                    _StdOut.advanceLine();
                     _StdOut.putText("Please enter a valid filename.");
                 }
             }
             else {
+                _StdOut.putText("ERROR: Disk is not yet formatted.");
+                _StdOut.advanceLine();
                 _StdOut.putText("The disk must be formatted before a file can be created.");
             }
         }
@@ -697,28 +738,49 @@ var RobOS;
             else {
                 _krnDiskDriver.formatDisk();
                 _DiskFormatted = true;
-                _StdOut.putText("The Disk has been Formatted.");
+                _StdOut.putText("The Disk has been formatted.");
             }
         }
         shellLS(args) {
+            //List Files
+            if (_DiskFormatted) {
+                var filenamesArr = _krnDiskDriver.listFilenames();
+                if (filenamesArr.length > 0) { //make sure there were filenames returned to the array
+                    _StdOut.putText("Files:");
+                    _StdOut.advanceLine();
+                    for (var l = 0; l < filenamesArr.length; l++) {
+                        _StdOut.putText(filenamesArr[l]);
+                        _StdOut.advanceLine();
+                    }
+                }
+                else {
+                    _StdOut.putText("NO FILES ON THE DISK.");
+                }
+            }
+            else {
+                _StdOut.putText("ERROR: Disk is not yet formatted.");
+                _StdOut.advanceLine();
+                _StdOut.putText("The disk must be formatted before a files can be created and filenames displayed.");
+            }
         }
         shellSetSchedule(args) {
             var setAlgorithm = args[0];
-            switch (setAlgorithm) {
-                case "rr" || "Red Robin" || "RED ROBIN" || "red robin":
-                    _SchedulingAlgorithm = "ROUND ROBIN";
-                    _StdOut.putText("Scheduling Algorithm set to Round Robin.");
-                    break;
-                case "fcfs" || "First Come First Serve" || "FIRST COME FIRST SERVE" || "first come first serve":
-                    _SchedulingAlgorithm = "FIRST COME FIRST SERVE";
-                    _StdOut.putText("Scheduling Algorithm set to First Come First Serve.");
-                    break;
-                case "priority" || "PRIORITY":
-                    _SchedulingAlgorithm = "PRIORITY";
-                    _StdOut.putText("Scheduling Algorithm set to Priority.");
-                    break;
-                default:
-                    _StdOut.putText("Please enter a valid Scheduling Algorithm [rr, fcfs, priority].");
+            if (setAlgorithm == "rr" || setAlgorithm == "Red Robin"
+                || setAlgorithm == "RED ROBIN" || setAlgorithm == "red robin") { //Red Robin Scheduling
+                _SchedulingAlgorithm = "ROUND ROBIN";
+                _StdOut.putText("Scheduling Algorithm set to Round Robin.");
+            }
+            else if (setAlgorithm == "fcfs" || setAlgorithm == "First Come First Serve"
+                || setAlgorithm == "FIRST COME FIRST SERVE" || setAlgorithm == "first come first serve") { //First Come First Serve Scheduling
+                _SchedulingAlgorithm = "FIRST COME FIRST SERVE";
+                _StdOut.putText("Scheduling Algorithm set to First Come First Serve.");
+            }
+            else if (_SchedulingAlgorithm == "priority" || _SchedulingAlgorithm == "PRIORITY") { //Priority Scheduling
+                _SchedulingAlgorithm = "PRIORITY";
+                _StdOut.putText("Scheduling Algorithm set to Priority.");
+            }
+            else {
+                _StdOut.putText("Please enter a valid Scheduling Algorithm [rr, fcfs, priority]");
             }
         }
         shellGetSchedule(args) {

@@ -200,7 +200,7 @@ module RobOS {
             
             RobOS.Control.updateAllTables();
             //currentPCB = null;
-            _Scheduler.roundRobin();
+            _Scheduler.schedule();
         }
         compareByteToXReg() {
             this.increasePC();

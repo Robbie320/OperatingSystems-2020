@@ -185,7 +185,7 @@ var RobOS;
             PCBList.splice(_MemoryManager.getIndex(PCBList, currentPCB.PID), 1);
             RobOS.Control.updateAllTables();
             //currentPCB = null;
-            _Scheduler.roundRobin();
+            _Scheduler.schedule();
         }
         compareByteToXReg() {
             this.increasePC();

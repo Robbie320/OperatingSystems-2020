@@ -1,7 +1,8 @@
 /* RobOS.css */
 
 body {
-  background: #48c9fc url(distrib/images/link.jpg) repeat;
+  background: #48c9fc url(distrib/images/link.jpg) repeat fixed;
+  color: black;
   font-family: Helvetica, Verdana, Arial, sans-serif;
   font-size: 12pt;
   font-weight: normal;
@@ -9,14 +10,14 @@ body {
 }
 
 h1 {
-  color: black;
+  /*color: black;*/
   font-size: 24pt;
   font-weight: normal;
   font-style: normal;
   border-bottom: 1px solid black;
 }
 h2 {
-  color: black;
+  /*color: black;*/
   font-size: 20pt;
   font-weight: normal;
   font-style: normal;
@@ -28,11 +29,11 @@ h3 {
   font-style: normal;
 }
 
-p, span, div{
+/*p, span, div{
   color: black;
-}
+}*/
 label {
-  color: black;
+  /*color: black;*/
   font-weight: bold;
 } 
 textarea {
@@ -41,7 +42,6 @@ textarea {
 
 table, tr, th, td {
   border: 1px solid black;
-  background: white;
   padding: 2px;
   text-align: center;
 }
@@ -85,13 +85,23 @@ table, tr, th, td {
   color: white;
   background-color: rgb(220,198,26);
 }
+.darkMode_button {
+  color: white;
+  background: black;
+}
+.darkMode {
+  background: black url(distrib/images/darthVader2.jpg)  no-repeat fixed;
+  background-size: 100%;
+  background-color:#1b1b1b;
+  color: white;
+}
 input[type="button"]:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
 .footerText {
-  color: black;
+  /*color: black;*/
   font-family: Arial, Helvetica, sans-serif;
   font-size: 8pt;
   text-align: center;

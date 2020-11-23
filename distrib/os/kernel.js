@@ -81,11 +81,9 @@ var RobOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             }
             else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
-                if (!_SingleStep) {
-                    _CPU.cycle();
-                    RobOS.Control.updateAllTables();
-                    _Scheduler.roundRobin();
-                }
+                _CPU.cycle();
+                _Scheduler.schedule();
+                //RobOS.Control.updateAllTables();
             }
             else { // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");

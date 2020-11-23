@@ -60,6 +60,7 @@ var RobOS;
         //
         // Host Events
         //
+        //BUTTONS//
         static hostBtnStartOS_click(btn) {
             // Disable the (passed-in) start button...
             btn.disabled = true;
@@ -67,6 +68,7 @@ var RobOS;
             document.getElementById("btnHaltOS").disabled = false;
             document.getElementById("btnReset").disabled = false;
             document.getElementById("btnSingleStepOn").disabled = false;
+            document.getElementById("btnDarkMode").disabled = false;
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
@@ -118,12 +120,33 @@ var RobOS;
             //disable Next Step button
             document.getElementById("btnNextStep").disabled = true;
         }
-        //UPDATE THE TABLES//
         static hostBtnNextStep_click(btn) {
             //Go to next step by turning to true
             _NextStep = true;
             _CPU.isExecuting = true;
         }
+        static hostBtnDarkMode_click(btn) {
+            var body = document.body;
+            var textarea = document.getElementById("taProgramInput");
+            var hostLog = document.getElementById("taHostLog");
+            //var tbCpu = document.getElementById("tbCpu");
+            //var tbProcesses = document.getElementById("tbProcesses");
+            body.classList.toggle("darkMode");
+            textarea.classList.toggle("darkMode");
+            hostLog.classList.toggle("darkMode");
+            //tbCpu.classList.toggle("darkMode");
+            //tbProcesses.classList.toggle("darkMode");
+            if (!_DarkMode) {
+                _StdOut.putText("Embrace the dark side...");
+                _DarkMode = !_DarkMode;
+            }
+            else {
+                _StdOut.putText("It's dangerous to go alone, take this!.");
+                _DarkMode = !_DarkMode;
+            }
+            _StdOut.advanceLine();
+        }
+        //UPDATE THE TABLES//
         static memoryTbUpdate() {
             var entered;
             var next;
@@ -252,9 +275,9 @@ var RobOS;
             //Rows starting at 1
             var rowNum = 1;
             //Track, Sector, Block for loops to set up using the HTML5 Session Storage
-            for (var x = 0; x < _Disk.tracks; x++) {
-                for (var y = 0; y < _Disk.sectors; y++) {
-                    for (var z = 0; z < _Disk.blocks; z++) {
+            for (var x = 0; x < _Disk.tracks; x++) { //tracks loop
+                for (var y = 0; y < _Disk.sectors; y++) { //sectors loop
+                    for (var z = 0; z < _Disk.blocks; z++) { //blocks loop
                         dataArr = sessionStorage.getItem(x + ":" + y + ":" + z).split(",");
                         //INITALIZE DATA ROW//
                         var dataRow = diskTb.insertRow(rowNum);

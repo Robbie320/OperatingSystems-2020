@@ -21,21 +21,8 @@ module RobOS {
                 this.firstComeFirstServe();
             } else if(_SchedulingAlgorithm == "PRIORITY") {
                 this.priority();
-            }
-        }
-        setSchedulingAlgorithm(algorithm) {
-            switch(algorithm) {
-                case "ROUND ROBIN":
-                    _SchedulingAlgorithm = "ROUND ROBIN";
-                    _StdOut.putText("Scheduling Algorithm: Round Robin");
-                    this.roundRobin();
-                    break;
-                default:
-                    _SchedulingAlgorithm = "ROUND ROBIN";
-                    _StdOut.putText("Scheduling algorithm not found.");
-                    _StdOut.advanceLine();
-                    _StdOut.putText("Defaulting scheduling algorithm to Round Robin.");
-                    break;
+            } else {
+                this.roundRobin();
             }
         }
         roundRobin() {
@@ -49,10 +36,10 @@ module RobOS {
                     _Pointer = 0;
                     if(currentPCB.PID != readyPCBQueue[_Pointer].PID) {
                         _Kernel.krnTrace("Context Switch | Round Robin (Only one process left)");
-                        //_KernelInterruptQueue.enqueue(interrupt);
+                        _KernelInterruptQueue.enqueue(interrupt);
                     } else {
                         this.numCycles++;
-                        if(this.numCycles > _Quantum) {
+                        if(this.numCycles >= _Quantum) {
                             this.numCycles = 1;
                         }
                     }
@@ -136,6 +123,10 @@ module RobOS {
                 if(_Pointer >= readyPCBQueue.length) {
                     _Pointer = 0;
                 }
+            } else if(scheduling == "FIRST COME FIRST SERVE") {
+                
+            } else if(scheduling == "PRIORITY") {
+
             } else {
                 _CPU.isExecuting = false;
                 return;
@@ -155,6 +146,7 @@ module RobOS {
             }
             RobOS.Control.proccessesTbUpdate();
             currentPCB = readyPCBQueue[_Pointer];
+
             //CPU = CURRENTPCB//
             _CPU.PC = currentPCB.PC;
             _CPU.ACC = currentPCB.ACC;
