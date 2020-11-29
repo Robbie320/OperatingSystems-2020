@@ -126,22 +126,21 @@ var RobOS;
             _CPU.isExecuting = true;
         }
         static hostBtnDarkMode_click(btn) {
+            //WARNING: dark mode is only for show and will not display things properly at the moment//
             var body = document.body;
             var textarea = document.getElementById("taProgramInput");
             var hostLog = document.getElementById("taHostLog");
-            //var tbCpu = document.getElementById("tbCpu");
-            //var tbProcesses = document.getElementById("tbProcesses");
+            var divMemory2 = document.getElementById("divMemory2");
             body.classList.toggle("darkMode");
             textarea.classList.toggle("darkMode");
             hostLog.classList.toggle("darkMode");
-            //tbCpu.classList.toggle("darkMode");
-            //tbProcesses.classList.toggle("darkMode");
+            divMemory2.classList.toggle("darkMode");
             if (!_DarkMode) {
                 _StdOut.putText("Embrace the dark side...");
                 _DarkMode = !_DarkMode;
             }
             else {
-                _StdOut.putText("It's dangerous to go alone, take this!.");
+                _StdOut.putText("It's dangerous to go alone, take this!");
                 _DarkMode = !_DarkMode;
             }
             _StdOut.advanceLine();

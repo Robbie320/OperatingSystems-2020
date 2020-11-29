@@ -96,7 +96,7 @@ var _Pointer = 0;
 
 //Disk
 var _Disk: RobOS.Disk;
-var _krnDiskDriver: RobOS.DeviceDriverDisk = null;
+var _krnFSDD: RobOS.FileSystemDeviceDriver = null;
 var _DiskFormatted = false; //default to false
 
 //Single Step

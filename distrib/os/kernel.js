@@ -31,9 +31,9 @@ var RobOS;
             this.krnTrace(_krnKeyboardDriver.status);
             //Load the Disk Device Driver
             this.krnTrace("Loading the disk device driver.");
-            _krnDiskDriver = new RobOS.DeviceDriverDisk(); // Construct it.
-            _krnDiskDriver.driverEntry(); // Call the driverEntry() initialization routine.
-            this.krnTrace(_krnDiskDriver.status);
+            _krnFSDD = new RobOS.FileSystemDeviceDriver(); // Construct it.
+            _krnFSDD.driverEntry(); // Call the driverEntry() initialization routine.
+            this.krnTrace(_krnFSDD.status);
             //Initialize Memory Manager
             _MemoryManager = new RobOS.MemoryManager();
             //Initialize Scheduler

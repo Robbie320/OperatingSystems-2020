@@ -33,7 +33,7 @@
    <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
    <script type="text/javascript" src="distrib/os/PCB.js"></script>
    <script type="text/javascript" src="distrib/os/scheduler.js"></script>
-   <script type="text/javascript" src="distrib/os/deviceDriverDisk.js"></script>
+   <script type="text/javascript" src="distrib/os/fileSystemDeviceDriver.js"></script>
 
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
@@ -134,7 +134,8 @@
    </div>
 
    <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
-      <canvas id ="display"
+      <canvas name ="display"
+              id ="display"
               width ="500px"
               height ="500px"
               tabindex ="6"
@@ -156,7 +157,9 @@
 
    <div id="divCPU" style="margin-left:520px;">
       <label>CPU</label>
-      <table id   ="tbCPU"
+      <table name ="tbCPU"
+             id   ="tbCPU"
+             class="tbCPU"
              style="width: 366px;">
          <tr>
             <th>PC</th>
@@ -179,9 +182,12 @@
 
    <div id="divMemory" style="margin-left:520px;">
       <label>Memory</label>
-      <div id   ="divMemory2"
+      <div name ="divMemory2"
+           id   ="divMemory2"
+           class="divMemory2"
            style="width:360px; height:158px; overflow-y:scroll;">
-         <table id  ="tbMemory" 
+         <table id  ="tbMemory"
+                class="tbMemory" 
                 style="width:343px;">
             <tr>
                <td style="font-weight:bold;">0x000</td>
@@ -1245,7 +1251,9 @@
 
    <div id="divProcesses" style="margin-left:520px;">
       <label>Processes</label>
-      <table id="tbProcesses"
+      <table name ="tbProcesses"
+             id   ="tbProcesses"
+             class="tbProcesses"
              style="width:366px;">
          <tr>
             <th>PID</th>

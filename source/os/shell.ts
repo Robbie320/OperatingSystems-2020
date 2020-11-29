@@ -783,11 +783,11 @@ module RobOS {
                 if(args.length == 1) { //No spaces allowed in Filenames
                     if(filename[0] != "~") { // "~" represents blank
                         if(filename.length < 60) {
-                            if(_krnDiskDriver.findFile(filename) == null) {
-                                _krnDiskDriver.createFile(filename);
+                            if(_krnFSDD.findFile(filename) == null) {
+                                _krnFSDD.createFile(filename);
                                 _StdOut.putText("Successfully created file: " + filename);
                             } else {
-                                _StdOut.putText("File " + filename + " already exists."); _StdOut.advanceLine();
+                                _StdOut.putText("File, " + filename + ", already exists."); _StdOut.advanceLine();
                                 _StdOut.putText("Please name your file something different.");
                             }
                         } else {
@@ -808,23 +808,98 @@ module RobOS {
         }
         public shellRead(args: String[]) {
             if(_DiskFormatted) { //Disk must be formatted to read a file
-                var filename = _krnDiskDriver;
                 if(args.length == 1) { //check for filename with no spaces
-                    
+                    var filename = args[0];
+                    var returnedFilename = _krnFSDD.findFile(filename);
+                    if(returnedFilename != null) {
+                        var returnedFileData = _krnFSDD.readFile(returnedFilename);
+                        if(returnedFileData != " ") {
+                            _StdOut.putText(returnedFileData);
+                        } else {
+                            _StdOut.putText("There is no data in this file to read."); _StdOut.advanceLine();
+                            _StdOut.putText("Please write something to the file to read it.");
+                        }
+                    } else {
+                        _StdOut.putText("ERROR: File, " + filename + ", not found."); _StdOut.advanceLine();
+                        _StdOut.putText("Please enter a valid filename that has been created.");
+                    }
+                } else {
+                    _StdOut.putText("ERROR: Incomplete command."); _StdOut.advanceLine();
+                    _StdOut.putText("Please enter a filename (without spaces) to read.");
                 }
+            } else {
+                _StdOut.putText("ERROR: Disk is not yet formatted."); _StdOut.advanceLine();
+                _StdOut.putText("The disk must be formatted before a files can be created then read.");
             }
         }
         public shellWrite(args: String[]) {
-            
+            if(_DiskFormatted) {
+                if(args.length > 1) {
+                    var filename = args[0];
+                    //get text to write to file
+                    var start = args[1];
+                    var end = args[args.length - 1];
+                    var returnedFilename = _krnFSDD.findFile(filename);
+                    if(returnedFilename != null) {
+                        if((start.charAt(0) == "\"" && end.charAt(end.length - 1) == "\"") || (start.charAt(0) == "\'" && end.charAt(end.length - 1) == "\'")) {
+                            if(args.length == 2) {
+                                start = start.slice(1, start.length-1);
+                                args[1] = start;
+                            } else {
+                                start = start.slice(1,start.length);
+                                args[1] = start;
+                                end = end.slice(0, end.length -1);
+                                args[args.length - 1] = end;
+                            }
+                            args.shift();
+                            _krnFSDD.writeFile(returnedFilename, args.join(" "), "no swap");
+                            _StdOut.putText("Text written to file, " + filename + ", successfully.");
+                        } else {
+                            _StdOut.putText("ERROR: Incomplete command."); _StdOut.advanceLine();
+                            _StdOut.putText("Please put the text you want to write to the file in double OR single quotes.");
+                        }
+                    } else {
+                        _StdOut.putText("ERROR: File, " + filename + ", not found."); _StdOut.advanceLine();
+                    _StdOut.putText("Please enter a valid filename that has been created.");
+                    }
+                } else if(args.length == 1) {
+                    _StdOut.putText("ERROR: Incomplete command."); _StdOut.advanceLine();
+                    _StdOut.putText("Please entering a filename, enter text to write to the file in double or single quotes .");
+                }else {
+                    _StdOut.putText("ERROR: Incomplete command."); _StdOut.advanceLine();
+                    _StdOut.putText("Please enter a filename followed by a text to write to the file.");
+                }
+            } else {
+                _StdOut.putText("ERROR: Disk is not yet formatted."); _StdOut.advanceLine();
+                _StdOut.putText("The disk must be formatted before a files can be created then written to.");
+            }
         }
         public shellDelete(args: String[]) {
-            
+            if(_DiskFormatted) { //Disk must be formatted to read a file
+                if(args.length == 1) { //check for filename with no spaces
+                    var filename = args[0];
+                    var returnedFilename = _krnFSDD.findFile(filename);
+                    if(returnedFilename != null) {
+                        _krnFSDD.deleteFile(returnedFilename);
+                        _StdOut.putText("Deleted file, " + filename + ", successfully.");
+                    } else {
+                        _StdOut.putText("ERROR: File, " + filename + ", not found."); _StdOut.advanceLine();
+                        _StdOut.putText("Please enter a valid filename that has been created.");
+                    }
+                } else {
+                    _StdOut.putText("ERROR: Incomplete command."); _StdOut.advanceLine();
+                    _StdOut.putText("Please enter a filename (without spaces) to delete.");
+                }
+            } else {
+                _StdOut.putText("ERROR: Disk is not yet formatted."); _StdOut.advanceLine();
+                _StdOut.putText("The disk must be formatted before a files can be created then deleted.");
+            }
         }
         public shellFormat(args: String[]) {
             if(_DiskFormatted) {
                 _StdOut.putText("The Disk has already been formatted. The Disk can only be formatted once.");
             } else {
-                _krnDiskDriver.formatDisk();
+                _krnFSDD.formatDisk();
                 _DiskFormatted = true;
                 _StdOut.putText("The Disk has been formatted.");
             }
@@ -832,7 +907,7 @@ module RobOS {
         public shellLS(args: String[]) {
             //List Files
             if(_DiskFormatted) {
-                var filenamesArr = _krnDiskDriver.listFilenames();
+                var filenamesArr = _krnFSDD.listFilenames();
                 if(filenamesArr.length > 0) { //make sure there were filenames returned to the array
                     _StdOut.putText("Files:");
                     _StdOut.advanceLine();
@@ -845,7 +920,7 @@ module RobOS {
                 }
             } else {
                 _StdOut.putText("ERROR: Disk is not yet formatted."); _StdOut.advanceLine();
-                _StdOut.putText("The disk must be formatted before a files can be created and filenames displayed.");
+                _StdOut.putText("The disk must be formatted before a files can be created then display filenames.");
             }
         }
         public shellSetSchedule(args: String[]) {

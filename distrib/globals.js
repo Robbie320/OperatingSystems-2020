@@ -76,7 +76,7 @@ var _Quantum = 6; //6 by default
 var _Pointer = 0;
 //Disk
 var _Disk;
-var _krnDiskDriver = null;
+var _krnFSDD = null;
 var _DiskFormatted = false; //default to false
 //Single Step
 var _SingleStep = false;

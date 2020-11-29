@@ -36,9 +36,9 @@ module RobOS {
             this.krnTrace(_krnKeyboardDriver.status);
             //Load the Disk Device Driver
             this.krnTrace("Loading the disk device driver.");
-            _krnDiskDriver = new DeviceDriverDisk();             // Construct it.
-            _krnDiskDriver.driverEntry();                        // Call the driverEntry() initialization routine.
-            this.krnTrace(_krnDiskDriver.status);
+            _krnFSDD = new FileSystemDeviceDriver();             // Construct it.
+            _krnFSDD.driverEntry();                        // Call the driverEntry() initialization routine.
+            this.krnTrace(_krnFSDD.status);
 
             //Initialize Memory Manager
             _MemoryManager = new MemoryManager();
@@ -96,7 +96,6 @@ module RobOS {
                 _CPU.cycle();
                 _Scheduler.schedule();
                 //RobOS.Control.updateAllTables();
-              
             } else { // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");
             }
@@ -178,7 +177,7 @@ module RobOS {
         //
         public krnTrace(msg: string) {
              // Check globals to see if trace is set ON.  If so, then (maybe) log the message.
-             if (_Trace) {
+            if (_Trace) {
                 if (msg === "Idle") {
                     // We can't log every idle clock pulse because it would quickly lag the browser quickly.
                     if (_OSclock % 10 == 0) {
@@ -189,7 +188,7 @@ module RobOS {
                 } else {
                     Control.hostLog(msg, "OS");
                 }
-             }
+            }
         }
 
         public krnTrapError(msg) {

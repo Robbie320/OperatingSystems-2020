@@ -52,7 +52,7 @@ var RobOS;
             //if a process is terminated or if the quantum number is reached, then switch processes
             if ((currentPCB.state == "Terminated" || this.numCycles >= _Quantum) && readyPCBQueue.length > 0) {
                 if (currentPCB.state == "Terminated") {
-                    _Pointer--; //Reduce pointer by one if the process is terminated or if quanta cycles is met
+                    _Pointer++; //Reduce pointer by one if the process is terminated or if quanta cycles is met
                 }
                 if (readyPCBQueue.length > 1) {
                     _Kernel.krnTrace("Context Switch | Round Robin");

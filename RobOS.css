@@ -10,14 +10,12 @@ body {
 }
 
 h1 {
-  /*color: black;*/
   font-size: 24pt;
   font-weight: normal;
   font-style: normal;
   border-bottom: 1px solid black;
 }
 h2 {
-  /*color: black;*/
   font-size: 20pt;
   font-weight: normal;
   font-style: normal;
@@ -33,7 +31,6 @@ h3 {
   color: black;
 }*/
 label {
-  /*color: black;*/
   font-weight: bold;
 } 
 textarea {
@@ -44,6 +41,7 @@ table, tr, th, td {
   border: 1px solid black;
   padding: 2px;
   text-align: center;
+  background: transparent;
 }
 
 #display {
@@ -52,17 +50,14 @@ table, tr, th, td {
   cursor: default;
 }
 
-#divDisk2, #taHostLog, #taProgramInput {
+#divDisk2, #taHostLog, #taProgramInput , #divMemory2, #divDisk2{
   border: 1px solid black;
   /*background-color: white;*/
+  /*border-style: outset;*/
 }
 
 #tbMemory, #tbCPU, #tbProcesses {
   background-color: transparent;
-}
-
-#divMemory2, #divDisk2 {
-  border-style: outset;
 }
 
 .start_button {
@@ -92,7 +87,7 @@ table, tr, th, td {
 .darkMode {
   background: black url(distrib/images/darthVader2.jpg)  no-repeat fixed;
   background-size: 100%;
-  background-color:#1b1b1b;
+  background-color: transparent;
   color: white;
 }
 input[type="button"]:disabled {
@@ -101,7 +96,6 @@ input[type="button"]:disabled {
 }
 
 .footerText {
-  /*color: black;*/
   font-family: Arial, Helvetica, sans-serif;
   font-size: 8pt;
   text-align: center;

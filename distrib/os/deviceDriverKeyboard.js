@@ -114,11 +114,11 @@ var RobOS;
                     }
                     else if (keyCode == 219) {
                         keyCode = 91; // [ opening bracket
-                        chr = String.fromCharCode(91);
+                        chr = String.fromCharCode(keyCode);
                     }
                     else if (keyCode == 220) {
                         keyCode = 92; // \ backslash
-                        chr = String.fromCharCode(92);
+                        chr = String.fromCharCode(keyCode);
                     }
                     else if (keyCode == 221) {
                         keyCode = 93; // ] closing bracket
@@ -126,7 +126,7 @@ var RobOS;
                     }
                     else if (keyCode == 222) {
                         keyCode = 39; // ' single quote
-                        chr = String.fromCharCode(39);
+                        chr = String.fromCharCode(keyCode);
                     }
                 }
                 ///////Shifted Punctuation///////
@@ -157,11 +157,11 @@ var RobOS;
                     }
                     else if (keyCode == 219) {
                         keyCode = 123; // { opening curly braces
-                        chr = String.fromCharCode(91);
+                        chr = String.fromCharCode(keyCode);
                     }
                     else if (keyCode == 220) {
                         keyCode = 124; // | straight vertical line
-                        chr = String.fromCharCode(92);
+                        chr = String.fromCharCode(keyCode);
                     }
                     else if (keyCode == 221) {
                         keyCode = 125; // } closing curly braces
@@ -169,7 +169,7 @@ var RobOS;
                     }
                     else if (keyCode == 222) {
                         keyCode = 34; // " double quote
-                        chr = String.fromCharCode(39);
+                        chr = String.fromCharCode(keyCode);
                     }
                 }
                 _KernelInputQueue.enqueue(chr);
