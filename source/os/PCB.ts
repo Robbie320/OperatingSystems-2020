@@ -16,7 +16,8 @@ module RobOS {
                      public state: string = "",
                      public location: string = "",
                      public section: string = "",
-                     public priority: number = 10) {
+                     public priority: number = 10,
+                     public numCycles: number = 0) {
 
             this.PID = PID;
             this.PC = PC;
@@ -29,6 +30,7 @@ module RobOS {
             this.location = location;
             this.section = section;
             this.priority = priority;
+            this.numCycles = numCycles;
         }
     }
 }

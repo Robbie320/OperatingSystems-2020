@@ -116,11 +116,15 @@ module RobOS {
             RobOS.Control.diskTbUpdate();
         }
         createSwapFile(PID, UPIArray) {
-            if(this.findFile("~SwapFile " + PID) == null) {
+            var filename = "~SwapFile" + PID;
+            var returnedFilename;
+            if(this.findFile(filename) == null) {
+                this.createFile(filename);
                 for(var d = UPIArray.length; d < 256; d++) {
                     UPIArray[UPIArray.length] = "00";// Fill up extra file space with 00s
                 }
-                this.writeFile(this.findFile("~SwapFile " + PID), UPIArray.join(), "swap");
+                returnedFilename = this.findFile(filename);
+                this.writeFile(returnedFilename, UPIArray.join(), "swap");
             } else {
                 console.log("ERROR: SWAP FILE ALREADY EXISTS.")
             }
@@ -190,6 +194,7 @@ module RobOS {
             //First get rid of delete current block of data
             var tempfilename = filename;
             var loop = true;
+
             while(loop) {
                 var nameArrBlock = sessionStorage.getItem(tempfilename).split(",");
                 var dataBlock = nameArrBlock[1] + ":" + nameArrBlock[2] + ":" + nameArrBlock[3];
@@ -328,7 +333,7 @@ module RobOS {
             swap = PCBsInMemory[0];
             if(_SchedulingAlgorithm == "PRIORITY") {
                 for(var p = 1; p < PCBsInMemory.length; p++) {
-                    if(PCBsInMemory[p].priority > swap.priority) {
+                    if(PCBsInMemory[p].priority < swap.priority) {
                         swap = PCBsInMemory[p];
                     }
                 }

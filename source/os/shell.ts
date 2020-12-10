@@ -600,7 +600,7 @@ module RobOS {
                     //Increment PID
                     _PID++;
                 } else if(!_MemoryManager.checkMemoryAvailability() && _DiskFormatted) {
-                    _StdOut.putText("Memory full. Loading process to disk.");
+                    _StdOut.putText("Memory full. Loading process to disk."); _StdOut.advanceLine();
                     Priority = _MemoryManager.setPriority(argument);
                     
                     var pcb = new RobOS.PCB();
@@ -636,7 +636,8 @@ module RobOS {
                     _PID++;
                 }
                 else {
-                    _StdOut.putText("Memory is full.");
+                    _StdOut.putText("Memory is full."); _StdOut.advanceLine();
+                    _StdOut.putText("Format the Disk to load more processes.");
                 }
             }
         }

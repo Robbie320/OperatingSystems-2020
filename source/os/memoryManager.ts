@@ -9,12 +9,12 @@ module RobOS {
         construtor() {}
 
         loadMemory(UPIArray, section, PID) {
-            if(section != "disk") {
+            if(section == "disk") {
+                _krnFSDD.createSwapFile(PID, UPIArray);
+            } else {
                 for(var i = 0; i < UPIArray.length; i++) {
                     _Memory.memoryArr[_Memory.getSectMin(section) + i] = UPIArray[i];
                 }
-            } else {
-                _krnFSDD.createSwapFile(PID, UPIArray);
             }
             //UPDATE TABLES
             RobOS.Control.updateAllTables();
@@ -162,7 +162,7 @@ module RobOS {
                     return PCBList[m];
                 }
             }
-            return false;
+            return null;
         }
         rollIn(PID) {
             var dataArr = [];
@@ -170,7 +170,7 @@ module RobOS {
             var PCBsInMemory = [];
             PCBsInMemory[PCBsInMemory.length] = this.checkProcessInMemory();
             if(PCBsInMemory.length >= 3) {
-                this.rollOut;
+                this.rollOut();
             }
             dataArr = _krnFSDD.getRollInData(PID);
             PCB.section = this.assignMemory();
