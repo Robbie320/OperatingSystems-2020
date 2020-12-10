@@ -174,7 +174,7 @@ var RobOS;
                     return PCBList[m];
                 }
             }
-            return false;
+            return null;
         }
         rollIn(PID) {
             var dataArr = [];
@@ -182,7 +182,7 @@ var RobOS;
             var PCBsInMemory = [];
             PCBsInMemory[PCBsInMemory.length] = this.checkProcessInMemory();
             if (PCBsInMemory.length >= 3) {
-                this.rollOut;
+                this.rollOut();
             }
             dataArr = _krnFSDD.getRollInData(PID);
             PCB.section = this.assignMemory();

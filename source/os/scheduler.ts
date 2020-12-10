@@ -78,8 +78,8 @@ module RobOS {
             var params;
             var interrupt;
             var tempPCB;
-
             var next = false;
+
             if(_SchedulingAlgorithm == "ROUND ROBIN") {
                 for(var process = 0; process < readyPCBQueue.length; process++) {
                     if(readyPCBQueue[process].numCycles < _Quantum) {
@@ -97,7 +97,7 @@ module RobOS {
                         readyPCBQueue[process].numCycles = 0;
                     }
                     //CONTEXT SWITCH//
-                    params = readyPCBQueue[this.Pointer];
+                    params = readyPCBQueue[0];
                     interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, interrupt);
                     _KernelInterruptQueue.enqueue(interrupt);
                 }
@@ -113,11 +113,12 @@ module RobOS {
                     }
                 }
                 if(!next) {
+                    this.numCycles = 0;
                     for(var process = 0; process < readyPCBQueue.length; process++) {
                         readyPCBQueue[process].numCycles = 0;
                     }
                     //CONTEXT SWITCH//
-                    params = readyPCBQueue[this.Pointer];
+                    params = readyPCBQueue[0];
                     interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, interrupt);
                     _KernelInterruptQueue.enqueue(interrupt);
                 }

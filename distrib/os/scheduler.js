@@ -107,7 +107,7 @@ var RobOS;
                         readyPCBQueue[process].numCycles = 0;
                     }
                     //CONTEXT SWITCH//
-                    params = readyPCBQueue[this.Pointer];
+                    params = readyPCBQueue[0];
                     interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, interrupt);
                     _KernelInterruptQueue.enqueue(interrupt);
                 }
@@ -124,11 +124,12 @@ var RobOS;
                     }
                 }
                 if (!next) {
+                    this.numCycles = 0;
                     for (var process = 0; process < readyPCBQueue.length; process++) {
                         readyPCBQueue[process].numCycles = 0;
                     }
                     //CONTEXT SWITCH//
-                    params = readyPCBQueue[this.Pointer];
+                    params = readyPCBQueue[0];
                     interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, interrupt);
                     _KernelInterruptQueue.enqueue(interrupt);
                 }
