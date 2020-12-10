@@ -9,12 +9,12 @@ module RobOS {
         construtor() {}
 
         loadMemory(UPIArray, section, PID) {
-            if(section != "disk") {
+            if(section == "disk") {
+                _krnFSDD.createSwapFile(PID, UPIArray);
+            } else {
                 for(var i = 0; i < UPIArray.length; i++) {
                     _Memory.memoryArr[_Memory.getSectMin(section) + i] = UPIArray[i];
                 }
-            } else {
-                _krnFSDD.createSwapFile(PID, UPIArray);
             }
             //UPDATE TABLES
             RobOS.Control.updateAllTables();

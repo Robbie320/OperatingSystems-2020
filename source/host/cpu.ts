@@ -132,6 +132,9 @@ module RobOS {
             //update tables (GUI) again
             RobOS.Control.updateAllTables();
 
+            //increase number of cycles for scheduler
+            currentPCB.numCycles++;
+
             if(_SingleStep == true) {
                 this.isExecuting = false;
             }
@@ -197,9 +200,11 @@ module RobOS {
             _MemoryManager.clearMem(currentPCB.section);
             readyPCBQueue.splice(_MemoryManager.getIndex(readyPCBQueue, currentPCB.PID), 1);
             PCBList.splice(_MemoryManager.getIndex(PCBList, currentPCB.PID), 1);
-            
+            if(_MemoryManager.checkPCBisResident(currentPCB.PID)) {
+                residentPCB.splice(_MemoryManager.getIndex(residentPCB, currentPCB.PID), 1);
+            }
             RobOS.Control.updateAllTables();
-            //currentPCB = null;
+            currentPCB = null;
             _Scheduler.schedule();
         }
         compareByteToXReg() {
