@@ -14,10 +14,33 @@ var RobOS;
                 }
             }
             else {
-                //_krnDiskDriver.createSwapFile();
+                _krnFSDD.createSwapFile(PID, UPIArray);
             }
             //UPDATE TABLES
             RobOS.Control.updateAllTables();
+        }
+        setPriority(Priority) {
+            if (Priority != null) {
+                if (!isNaN(Number(Priority))) {
+                    _StdOut.putText("Priority set to: " + Priority);
+                    _StdOut.advanceLine();
+                    return Priority;
+                }
+                else {
+                    _StdOut.putText("ERROR INVALID PRIORITY: Please enter a number to set the priority.");
+                    _StdOut.advanceLine();
+                    _StdOut.putText("Priority set to: 10 (Default).");
+                    _StdOut.advanceLine();
+                    Priority = _DefaultPriority;
+                    return Priority;
+                }
+            }
+            else {
+                _StdOut.putText("Priority set to: 10 (Default).");
+                _StdOut.advanceLine();
+                Priority = _DefaultPriority;
+                return Priority;
+            }
         }
         checkMemoryAvailability() {
             var availability;
@@ -145,11 +168,50 @@ var RobOS;
             }
             return false;
         }
-        rollInProcess(pid) {
+        checkProcessInMemory() {
+            for (var m = 0; m < PCBList.length; m++) {
+                if (PCBList[m].location == "Memory") {
+                    return PCBList[m];
+                }
+            }
+            return false;
         }
-        rollOutProcess() {
+        rollIn(PID) {
+            var dataArr = [];
+            var PCB = this.getPCB(PID);
+            var PCBsInMemory = [];
+            PCBsInMemory[PCBsInMemory.length] = this.checkProcessInMemory();
+            if (PCBsInMemory.length >= 3) {
+                this.rollOut;
+            }
+            dataArr = _krnFSDD.getRollInData(PID);
+            PCB.section = this.assignMemory();
+            PCB.location = "Memory";
+            this.loadMemory(dataArr, PCB.section, PID);
         }
-        loadDiskProcess() {
+        rollOut() {
+            var PCB = _krnFSDD.rollOutPCB();
+            var dataArr = [];
+            for (var i = _Memory.getSectMin(PCB.section); i < _Memory.getSectMax(PCB.section); i++) {
+                dataArr[dataArr.length] = _Memory.memoryArr[i];
+            }
+            _krnFSDD.createSwapFile(PCB.PID, dataArr);
+            //Clear memory
+            this.clearMem(PCB.section);
+            //Change to disk
+            PCBList[this.getIndex(PCBList, PCB.PID)].location = "Disk";
+            PCBList[this.getIndex(PCBList, PCB.PID)].section = "disk";
+        }
+        loadDisk() {
+            if (this.checkProcessOnDisk) {
+                var PCB;
+                for (var process; process < PCBList.length; process++) {
+                    if (PCBList[process].location == "Disk") {
+                        PCB = PCBList[process];
+                    }
+                }
+                this.rollIn(PCB.PID);
+            }
         }
     }
     RobOS.MemoryManager = MemoryManager;

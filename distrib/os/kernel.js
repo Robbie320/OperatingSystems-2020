@@ -122,12 +122,10 @@ var RobOS;
                     _StdOut.putText(params[0]);
                     break;
                 case CONTEXT_SWITCH:
-                    //set to next PCB
-                    _Scheduler.setPointer(_SchedulingAlgorithm);
-                    //Switch PCBs
-                    _Scheduler.switchPCB();
-                    RobOS.Control.proccessesTbUpdate();
-                    //currentPCB = params[0];
+                    currentPCB = params[0];
+                    if (currentPCB.location == "Disk") {
+                        _MemoryManager.rollIn(params[0].PID);
+                    }
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");

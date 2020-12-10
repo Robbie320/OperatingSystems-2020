@@ -16,10 +16,10 @@ const APP_VERSION: string = "Connery 3.5";   // What did you expect?
 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
+// Interrupts
 const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
-//Interrupts
 var SYSTEM_CALL: number = 2;
 var CONTEXT_SWITCH: number = 3;
 
@@ -92,6 +92,7 @@ var _MemoryManager: any = null;
 var _Scheduler: any = null;
 var _SchedulingAlgorithm = "ROUND ROBIN"; //Round Robin by Default
 var _Quantum = 6; //6 by default
+var _DefaultPriority;
 var _Pointer = 0;
 
 //Disk

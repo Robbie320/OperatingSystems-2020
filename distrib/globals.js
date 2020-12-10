@@ -13,10 +13,10 @@
 const APP_NAME = "RobOS"; // 'cause Bob and I were at a loss for a better name.
 const APP_VERSION = "Connery 3.5"; // What did you expect?
 const CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
+// Interrupts
 const TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ = 1;
-//Interrupts
 var SYSTEM_CALL = 2;
 var CONTEXT_SWITCH = 3;
 var today = new Date();
@@ -73,6 +73,7 @@ var _MemoryManager = null;
 var _Scheduler = null;
 var _SchedulingAlgorithm = "ROUND ROBIN"; //Round Robin by Default
 var _Quantum = 6; //6 by default
+var _DefaultPriority;
 var _Pointer = 0;
 //Disk
 var _Disk;

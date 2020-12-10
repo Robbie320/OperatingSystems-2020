@@ -395,7 +395,7 @@ module RobOS {
                         _StdOut.putText("Test BSOD message.");
                         break;
                     case "load":
-                        _StdOut.putText("Load the UPI (User Program Input) into memory for execution.");
+                        _StdOut.putText("Load the UPI (User Program Input) into memory for execution. Add a number after the command to set priority. Default is 10.");
                         break;
                     case "run":
                         _StdOut.putText("Runs a program that's already loaded into memory.");
@@ -533,6 +533,9 @@ module RobOS {
             _Kernel.krnShutdown();
         }
         public shellLoad(args: string[]){
+            var argument = args[0];
+            var Priority;
+
             var valid = true;
             //Valid hex values to make program
             var validHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
@@ -564,15 +567,15 @@ module RobOS {
             
             //Loading Program
             if(valid == true){
-                //_PID initialized in globals.ts
-                //_StdOut.putText("Entered hex OP codes are valid.");
-                //_StdOut.advanceLine();
                 if(_MemoryManager.checkMemoryAvailability()) {
+                    Priority = _MemoryManager.setPriority(argument);
+
                     var pcb = new RobOS.PCB();
                     pcb.PID = _PID;
                     //currentPCB = pcb;
                     pcb.location = "Memory";
                     pcb.state = "Waiting";
+                    pcb.priority = Priority;
                     
                     //Assign to memory section
                     pcb.section = _MemoryManager.assignMemory();
@@ -598,12 +601,15 @@ module RobOS {
                     _PID++;
                 } else if(!_MemoryManager.checkMemoryAvailability() && _DiskFormatted) {
                     _StdOut.putText("Memory full. Loading process to disk.");
+                    Priority = _MemoryManager.setPriority(argument);
+                    
                     var pcb = new RobOS.PCB();
                     pcb.PID = _PID;
                     //currentPCB = pcb;
                     pcb.location = "Disk";
                     pcb.state = "Waiting";
-                    
+                    pcb.priority = Priority;
+
                     //Assign to memory section
                     pcb.section = "disk";
                     PCBList[PCBList.length] = pcb;
@@ -618,6 +624,8 @@ module RobOS {
                     RobOS.Control.memoryTbUpdate();
                     //Update the Processes Table
                     RobOS.Control.proccessesTbUpdate();
+                    //Update the Disk Table
+                    RobOS.Control.diskTbUpdate();
 
                     //Program successfully loaded
                     _StdOut.putText("Program loaded.");
@@ -645,6 +653,7 @@ module RobOS {
                     readyPCBQueue[readyPCBQueue.length] = _MemoryManager.getPCB(enteredPID);
                     currentPCB = _MemoryManager.getPCB(enteredPID);
                     _CPU.isExecuting = true;
+                    _Scheduler.schedule();
                     RobOS.Control.updateAllTables();
                 }else {
                     _StdOut.putText("Please enter a valid PID number.");
@@ -659,20 +668,21 @@ module RobOS {
                 return;
             } else {
                 //Turn all processes from waiting to ready
-               for(var i = 0; i < residentPCB.length; i+=0) {
+                for(var i = 0; i < residentPCB.length; i+=0) {
                     if(residentPCB[i].state == "Waiting") {
                         residentPCB[i].state = "Ready";
-                        readyPCBQueue[readyPCBQueue.length] = residentPCB[i];
+                        readyPCBQueue[readyPCBQueue.length] = PCBList[i];
                         residentPCB.splice(i, 1);
                     }
                 }
                 if(!_CPU.isExecuting) {
-                    _CPU.init();
+                    //_CPU.init();
                     currentPCB = readyPCBQueue[0];
                     if(_SingleStep == true) {
                         _CPU.isExecuting = false;
                     } else{
                         _CPU.isExecuting = true;
+                        _Scheduler.schedule();
                     }
                     RobOS.Control.updateAllTables();
                 }
@@ -935,7 +945,7 @@ module RobOS {
                 _SchedulingAlgorithm = "FIRST COME FIRST SERVE";
                 _StdOut.putText("Scheduling Algorithm set to First Come First Serve.");
 
-            } else if (_SchedulingAlgorithm == "priority" || _SchedulingAlgorithm == "PRIORITY") { //Priority Scheduling
+            } else if (setAlgorithm == "Priority"|| setAlgorithm == "PRIORITY" || setAlgorithm == "priority") { //Priority Scheduling
                 _SchedulingAlgorithm = "PRIORITY";
                 _StdOut.putText("Scheduling Algorithm set to Priority.");
 

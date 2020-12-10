@@ -15,154 +15,98 @@ var RobOS;
             this.waitTime = waitTime;
         }
         schedule() {
-            if (_SchedulingAlgorithm == "ROUND ROBIN") {
-                this.roundRobin();
-            }
-            else if (_SchedulingAlgorithm == "FIRST COME FIRST SERVE") {
-                this.firstComeFirstServe();
-            }
-            else if (_SchedulingAlgorithm == "PRIORITY") {
-                this.priority();
-            }
-            else {
-                this.roundRobin();
-            }
-        }
-        roundRobin() {
-            //if(readyPCBQueue.length > 0) {
             var params;
             var interrupt;
-            params = [0];
-            interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, params);
-            //if there is only one process left
-            if (readyPCBQueue.length == 1) {
-                _Pointer = 0;
-                if (currentPCB.PID != readyPCBQueue[_Pointer].PID) {
-                    _Kernel.krnTrace("Context Switch | Round Robin (Only one process left)");
-                    _KernelInterruptQueue.enqueue(interrupt);
+            if (_SchedulingAlgorithm == "ROUND ROBIN") {
+                if (readyPCBQueue.length > 0) {
+                    if (readyPCBQueue.length == 1 && currentPCB == null) {
+                        params = readyPCBQueue[0];
+                        interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, params);
+                        _KernelInterruptQueue.enqueue(interrupt);
+                    }
+                    else if (readyPCBQueue.length >= 2 && currentPCB == null) {
+                        this.findNextProcess();
+                    }
+                    else if (readyPCBQueue.length >= 2) {
+                        if (!(currentPCB.numCycles < _Quantum)) {
+                            currentPCB.state = "Waiting";
+                            this.findNextProcess();
+                        }
+                    }
+                    this.numCycles++;
+                    _CPU.isExecuting = true;
                 }
                 else {
-                    this.numCycles++;
-                    if (this.numCycles >= _Quantum) {
-                        this.numCycles = 1;
-                    }
+                    _CPU.isExecuting = false;
                 }
-                return;
             }
-            //if a process is terminated or if the quantum number is reached, then switch processes
-            if ((currentPCB.state == "Terminated" || this.numCycles >= _Quantum) && readyPCBQueue.length > 0) {
-                if (currentPCB.state == "Terminated") {
-                    _Pointer++; //Reduce pointer by one if the process is terminated or if quanta cycles is met
+            else if (_SchedulingAlgorithm == "FIRST COME FIRST SERVE" || _SchedulingAlgorithm == "PRIORITY") {
+                if (readyPCBQueue.length > 0) {
+                    if (readyPCBQueue.length == 1 && currentPCB == null) {
+                        params = readyPCBQueue[0];
+                        interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, params);
+                        _KernelInterruptQueue.enqueue(interrupt);
+                    }
+                    else if (readyPCBQueue.length >= 2 && currentPCB == null) {
+                        this.findNextProcess();
+                    }
+                    _CPU.isExecuting = true;
                 }
-                if (readyPCBQueue.length > 1) {
-                    _Kernel.krnTrace("Context Switch | Round Robin");
+                else {
+                    _CPU.isExecuting = false;
                 }
-                //Context Switch
-                _KernelInterruptQueue.enqueue(interrupt);
-                return;
             }
             else {
-                //If there are no more processes left
-                if (readyPCBQueue.length == 0) {
-                    _CPU.isExecuting = false;
-                    this.numCycles = 1;
-                    _CPU.init();
-                }
-                else { //processes is still running so increment number of cycles
-                    //_CPU.isExecuting = true;
-                    this.numCycles++;
-                }
+                _StdOut.putText("Uh oh. Something went wrong. Scheduling Algorithm not found.");
             }
-            //}
         }
-        firstComeFirstServe() {
-            //if(readyPCBQueue.length > 0) {
+        findNextProcess() {
             var params;
             var interrupt;
-            params = [0];
-            interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, params);
-            //if there is only one process left
-            if (readyPCBQueue.length == 1) {
-                _Pointer = 0;
-                if (currentPCB.PID != readyPCBQueue[_Pointer].PID) {
-                    _Kernel.krnTrace("Context Switch | First Come First Serve (Only one process left)");
-                    //_KernelInterruptQueue.enqueue(interrupt);
+            var tempPCB;
+            var next = false;
+            if (_SchedulingAlgorithm == "ROUND ROBIN") {
+                for (var process = 0; process < readyPCBQueue.length; process++) {
+                    if (this.numCycles < _Quantum) {
+                        params = readyPCBQueue[process];
+                        interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, params);
+                        _KernelInterruptQueue.enqueue(interrupt);
+                        next = true;
+                        break;
+                    }
                 }
-                return;
+                if (!next) {
+                    this.numCycles = 0;
+                    params = readyPCBQueue[0];
+                    interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, interrupt);
+                    _KernelInterruptQueue.enqueue(interrupt);
+                }
             }
-            //if a process is terminated or if the quantum number is reached, then switch processes
-            if ((currentPCB.state == "Terminated") && readyPCBQueue.length > 0) {
-                if (currentPCB.state == "Terminated") {
-                    _Pointer--; //Reduce pointer by one if the process is terminated or if quanta cycles is met
+            else if (_SchedulingAlgorithm == "FIRST COME FIRST SERVE") {
+                tempPCB = readyPCBQueue[0];
+                for (var process = 1; process < readyPCBQueue.length; process++) {
+                    if (tempPCB.PID > readyPCBQueue[process].PID) {
+                        tempPCB = readyPCBQueue[process];
+                    }
+                    params = [tempPCB];
+                    interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, params);
+                    _KernelInterruptQueue.enqueue(interrupt);
                 }
-                if (readyPCBQueue.length > 1) {
-                    _Kernel.krnTrace("Context Switch | First Come First Serve");
+            }
+            else if (_SchedulingAlgorithm == "PRIORITY") {
+                tempPCB = readyPCBQueue[0];
+                for (var process = 1; process < readyPCBQueue.length; process++) {
+                    if (tempPCB.priority > readyPCBQueue[process].priority) {
+                        tempPCB = readyPCBQueue[process];
+                    }
+                    params = [tempPCB];
+                    interrupt = new RobOS.Interrupt(CONTEXT_SWITCH, params);
+                    _KernelInterruptQueue.enqueue(interrupt);
                 }
-                //Context Switch
-                _KernelInterruptQueue.enqueue(interrupt);
-                return;
             }
             else {
-                //If there are no more processes left
-                if (readyPCBQueue.length == 0) {
-                    _CPU.isExecuting = false;
-                    this.numCycles = 1;
-                    _CPU.init();
-                }
-                else { //processes is still running so increment number of cycles
-                    //_CPU.isExecuting = true;
-                    this.numCycles++;
-                }
+                _StdOut.putText("Uh oh. Something went wrong. Scheduling Algorithm not found.");
             }
-            //}
-        }
-        priority() {
-        }
-        setPointer(scheduling) {
-            //Set which PCB to pointer is pointing at
-            if (scheduling == "ROUND ROBIN") {
-                if (_Pointer < 0) {
-                    _Pointer = 0;
-                }
-                if (this.numCycles >= _Quantum) {
-                    _Pointer++;
-                }
-                if (_Pointer >= readyPCBQueue.length) {
-                    _Pointer = 0;
-                }
-            }
-            else if (scheduling == "FIRST COME FIRST SERVE") {
-            }
-            else if (scheduling == "PRIORITY") {
-            }
-            else {
-                _CPU.isExecuting = false;
-                return;
-            }
-        }
-        switchPCB() {
-            //Switch to next PCB after quanta is reached
-            //SNAPSHOT//
-            currentPCB.PC = _CPU.PC;
-            currentPCB.ACC = _CPU.ACC;
-            currentPCB.Xreg = _CPU.Xreg;
-            currentPCB.Yreg = _CPU.Yreg;
-            currentPCB.Zflag = _CPU.Zflag;
-            if (currentPCB.state == "Running") {
-                currentPCB.state = "Ready";
-            }
-            RobOS.Control.proccessesTbUpdate();
-            currentPCB = readyPCBQueue[_Pointer];
-            //CPU = CURRENTPCB//
-            _CPU.PC = currentPCB.PC;
-            _CPU.ACC = currentPCB.ACC;
-            _CPU.Xreg = currentPCB.Xreg;
-            _CPU.Yreg = currentPCB.Yreg;
-            _CPU.Zflag = currentPCB.Zflag;
-            currentPCB.state = "Runnning";
-            RobOS.Control.proccessesTbUpdate();
-            //reset number of cycles when switching PCBs
-            this.numCycles = 1;
         }
     }
     RobOS.Scheduler = Scheduler;

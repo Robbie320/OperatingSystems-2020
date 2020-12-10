@@ -107,6 +107,29 @@ var RobOS;
             sessionStorage.setItem(data, dataArr.join());
             RobOS.Control.diskTbUpdate();
         }
+        createSwapFile(PID, UPIArray) {
+            if (this.findFile("~SwapFile " + PID) == null) {
+                for (var d = UPIArray.length; d < 256; d++) {
+                    UPIArray[UPIArray.length] = "00"; // Fill up extra file space with 00s
+                }
+                this.writeFile(this.findFile("~SwapFile " + PID), UPIArray.join(), "swap");
+            }
+            else {
+                console.log("ERROR: SWAP FILE ALREADY EXISTS.");
+            }
+        }
+        createEmptyBlockArr(emptyBlockArr) {
+            emptyBlockArr = new Array(64);
+            for (var b = 0; b < emptyBlockArr.length; b++) {
+                if (b < 4) {
+                    emptyBlockArr[b] = "0";
+                }
+                else {
+                    emptyBlockArr[b] = "00";
+                }
+            }
+            return emptyBlockArr;
+        }
         readFile(filename) {
             var nameArr = [];
             var dataArr = [];
@@ -136,6 +159,26 @@ var RobOS;
                 }
             }
             return data;
+        }
+        readSwapFile(filename) {
+            var swapDataArr = [];
+            //Get TSB data
+            var filenameArr = sessionStorage.getItem(filename).split(",");
+            var data = filenameArr[1] + ":" + filenameArr[2] + ":" + filenameArr[3];
+            var dataArr = sessionStorage.getItem(data).split(",");
+            //add data to array
+            for (var i = 4; i < dataArr.length; i++) {
+                swapDataArr[swapDataArr.length] = dataArr[i];
+            }
+            var nextBlock = dataArr[1] + ":" + dataArr[2] + ":" + dataArr[3];
+            //if data continues to new block
+            if (nextBlock != "FF:FF:FF") {
+                swapDataArr = swapDataArr.concat(this.readSwapFile(data));
+                return swapDataArr;
+            }
+            else {
+                return swapDataArr;
+            }
         }
         writeFile(filename, data, swap) {
             //First get rid of delete current block of data
@@ -196,18 +239,6 @@ var RobOS;
                 sessionStorage.setItem(dataBlock, lastBlockArr.concat(dataArr).join());
             }
         }
-        createEmptyBlockArr(emptyBlockArr) {
-            emptyBlockArr = new Array(64);
-            for (var b = 0; b < emptyBlockArr.length; b++) {
-                if (b < 4) {
-                    emptyBlockArr[b] = "0";
-                }
-                else {
-                    emptyBlockArr[b] = "00";
-                }
-            }
-            return emptyBlockArr;
-        }
         deleteFile(filename) {
             //Delete Block Data
             var tempfilename = filename;
@@ -230,6 +261,19 @@ var RobOS;
             sessionStorage.setItem(filename, emptyBlockArr.join());
             RobOS.Control.diskTbUpdate();
         }
+        deleteSwapFiles() {
+            var tempBlockArr;
+            var tempFilenameBlock;
+            for (var s; s < _Disk.sectors; s++) {
+                for (var b; b < _Disk.blocks; b++) {
+                    tempBlockArr = sessionStorage.getItem("0:" + s + ":" + b).split(",");
+                    tempFilenameBlock = this.getFilename(tempBlockArr);
+                    if (tempFilenameBlock[0] == "~") {
+                        this.deleteFile(this.findFile(tempFilenameBlock));
+                    }
+                }
+            }
+        }
         listFilenames() {
             var filenameArr = [];
             var tempBlockArr = [];
@@ -250,6 +294,30 @@ var RobOS;
                 }
             }
             return filenameArr;
+        }
+        getRollInData(PID) {
+            var filename = this.findFile("~SwapFile " + PID);
+            var data = this.readSwapFile(filename);
+            this.deleteFile(filename);
+            return data.slice(0, 256);
+        }
+        rollOutPCB() {
+            var swap;
+            var PCBsInMemory = [];
+            for (var process = 0; process < PCBList.length; process++) {
+                if (PCBList[process].location == "Memory") {
+                    PCBsInMemory[PCBsInMemory.length] = PCBList[process];
+                }
+            }
+            swap = PCBsInMemory[0];
+            if (_SchedulingAlgorithm == "PRIORITY") {
+                for (var p = 1; p < PCBsInMemory.length; p++) {
+                    if (PCBsInMemory[p].priority > swap.priority) {
+                        swap = PCBsInMemory[p];
+                    }
+                }
+            }
+            return swap;
         }
     }
     RobOS.FileSystemDeviceDriver = FileSystemDeviceDriver;

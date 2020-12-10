@@ -47,7 +47,7 @@
 
    <div id="divButtonBar" style="margin:4px;">
       <input type="button"
-             id = "btnStartOS"o
+             id = "btnStartOS"
              name="brnStartOS"
              class="start_button"
              value="Start"
@@ -124,7 +124,7 @@
             var sec = day.getSeconds();
             var min = day.getMinutes();
             var hour = day.getHours();
-            clock.textContent = hour + ":" + min + ":" + sec;
+            clock.textContent = " | " + hour + ":" + min + ":" + sec;
          }
          setInterval(Date, 10);
          setInterval(time, 10);
