@@ -1,4 +1,4 @@
-2019 Browser-based Operating System in TypeScript
+Fall 2020 Browser-based Operating System in TypeScript
 =================================================
 
 This is Alan's Operating Systems class initial project.
@@ -12,6 +12,65 @@ Setup TypeScript
 1. Install the [npm](https://www.npmjs.org/) package manager if you don't already have it.
 1. Run `npm install -g typescript` to get the TypeScript Compiler. (You may need to do this as root.)
 
+Command List
+===============
+ver - Displays the current version data.
+            
+help - This is the help command. Seek help.
+
+shutdown - Shuts down the virtual OS but leaves the underlying host / hardware simulation running.
+
+cls - Clears the screen and resets the cursor position.
+
+man <topic> - Displays the MANual page for <topic>.
+
+trace <on | off> - Turns the OS trace on or off.
+
+rot13 <string> - Does rot13 obfuscation on <string>.
+
+prompt <string> - Sets the prompt.
+
+date - Displays the current date and time.
+
+whereami - Tells you where you are on Earth.
+
+loz - Displays triforce text art...
+
+status <string> - Sets your preferred status.
+
+bsod - Displays a BSOD message.
+
+load - Load UPI into memory for execution.
+
+run <pid> - Runs a program already loaded in memory.
+
+runall - Execute all programs at once.
+
+clearmem - Clear all memory partitions.
+
+ps - Display the PID and state of all processes.
+
+kill <id> - Kill one process.
+
+killall - Kill all processes.
+
+quantum <int> - Sets the RR (Round Robin) quantum.
+
+create <filename> - Create a new file.
+
+read <filename> - Read and display the contents of a file.
+
+write <filename> - Write the data inside the quotes to the file.
+
+delete <filename> - Remove the file from storage.
+
+format - Initalize all blocks in all sectors in all sectors in all tracks.
+
+ls - List the files currently stored on the disk.
+
+setschedule - Set a specified CPU scheduling algorithm.
+
+getschedule - Return the currently selected CPU scheduling algorithm.
 
 Workflow
 =============
